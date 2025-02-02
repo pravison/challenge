@@ -90,33 +90,24 @@ WSGI_APPLICATION = 'challenge.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# import dj_database_url 
-
-# DATABASES = {
-#     'default': dj_database_url.parse(
-#         env('psql'),
-#         conn_max_age=600,
-#         conn_health_checks=True,
-#     )
-# }
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE'  : 'django.db.backends.mysql', # <-- UPDATED line 
-#         'NAME'    : 'saleaqhw_qreators',                 # <-- UPDATED line 
-#         'USER'    : 'saleaqhw_creators',                     # <-- UPDATED line
-#         'PASSWORD': 'Hj@vg5C9jqunGrY',              # <-- UPDATED line
-#         'HOST'    : 'localhost',                # <-- UPDATED line
-#         'PORT'    : '3306',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+import dj_database_url 
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        env('psql'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+
+
 
 
 # SECURE_CONTENT_TYPE_NOSNIFF = True
