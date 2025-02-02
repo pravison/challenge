@@ -1,0 +1,79 @@
+{% extends 'business/main.html' %}
+{% load static %}
+{% load humanize%}
+{% block title %} Coupones Lists {% endblock%}
+{% block content %}
+
+<main id="main" class="main">
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+
+    {% endfor %}
+{% endif %}
+
+    <div class="pagetitle">
+      <h1>Coupones Tables</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' business.slug %}">Dashboard</a></li>
+          <li class="breadcrumb-item active">Data</li>
+          
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body overflow-auto">
+              <h5 class="card-title">Coupones</h5>
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                search anything 
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Coupone</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Used</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Date Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for coupone in coupones %}
+                  <tr>
+                    <th scope="row">{{coupone.code}}</th>
+                    <th scope="row">{{coupone.coupone_type}}</th>
+                    <th scope="row">{{coupone.discount}}%</th>
+                    <td>{{ coupone.customer.user.first_name}} {{ coupone.customer.user.last_name}}</td>
+                    <th scope="row"><a href="{% url 'coupones' business.slug %}?update={{coupone.id}}" title="update"> {% if coupone.used %}Yes {% else %}No {%  endif %}</a></th>
+                    <th scope="row">{% if coupone.date_created|date:"Y-m-d"|add:"{{coupone.expiry_in}}" > now.date|date:"Y-m-d"  %} Yes {% elif now.date|date:"Y-m-d" <  coupone.date_created|date:"Y-m-d"|add:"{{coupone.expiry_in}}" %} No {% else %} Expires Today {% endif %} </th>
+                    <th scope="row">{{coupone.date_created}}</th>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+</main><!-- End #main -->
+{% endblock %}

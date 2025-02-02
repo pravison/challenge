@@ -1,0 +1,72 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block title %} - Bring More Customers to Your Store and Keep Them Coming Back!{% endblock %}
+{% block keyword %}{% endblock %}
+{% block description %}{% endblock %}
+
+{% block content %}
+<!-- Pricing Plan -->
+<section class="pricing_plan pp_2" id="pricing" style="margin-top: 20px;">
+    <div class="container">
+        <div class="tittle">
+            <h2>Pricing Plan</h2>
+            <p>Select Your Favourable Pricing Plan</p>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div class="row">
+            
+            <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.4s">
+                <div class="plan plan_3">
+                    <h3>Yearly<br/> <b>125,000 ksh</b></h3>
+                    <h6>renewable yearly and you get</h6>
+                    <ul>
+                        <li>unlimitted qr codes</li>
+                        <li>unlimittted challanges </li>
+                        <li>We manage conntent clippers for you</li>
+                        <li>We shoot videos For you</li>
+                    </ul>
+                    <a href="{% url 'add_business' %}?pricing_plan=yearly" class="theme_btn">Start now</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.2s">
+                <div class="plan plan_2">
+                    <h3>Semi Annually<br/> <b>17,500 ksh.</b></h3>
+                    <h6>renewable semi-annually and you get</h6>
+                    <ul>
+                        <li>unlimitted qr codes</li>
+                        <li>unlimittted challanges </li>
+                        <li>access to conntent clippers</li>
+                        <li>Support in Getting video creators</li>
+                    </ul>
+                    <a href="{% url 'add_business' %}?pricing_plan=semi_yearly" class="theme_btn">Start now</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeIn">
+                <div class="plan active">
+                    <h3>Monthly<br/> <b>3,500 ksh.</b></h3>
+                    <h6>renewable monthly and you get</h6>
+                    <ul>
+                        <li>unlimitted qr codes</li>
+                        <li>unlimittted challanges </li>
+                        <li>Support in Getting video creators</li>
+                        <li>Support in acquiring conntent clippers</li>
+                    </ul>
+                    <a href="{% url 'add_business' %}?pricing_plan=monthly" class="theme_btn">Start now</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+<!-- End Pricing Plan -->
+
+{% endblock %}

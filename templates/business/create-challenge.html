@@ -1,0 +1,74 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<!-- popup register -->
+
+<!-- Get In Touch With Us Area -->
+<section class="get_touch_area" style="padding-top: 120px;">
+    <div class="row" style="justify-content: center;">
+        
+        <div class="col-lg-6 " >
+            <div class="row" style="justify-content: center;"><b>Create Challenge</b></div>
+            <div class="from_area">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                <form class="from_main" action="{% url 'create_store_challenge' business.slug %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <select class="form-control" name="challenge_type" style="height: 55px;" placeholder="Select Coupone Type" required>
+                            <option value="">Select Challenge Type</option>
+                            <option value="daily challenge">daily challenge</option>
+                            <option value="weekly challenge">weekly challenge</option>
+                            <option value="monthly challenge">monthly challenge</option>
+                            <option value="yearly challenge">yearly challenge</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="challenge_name" class="form-control" placeholder="Challenge Name" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea type="text" name="challenge_reward" class="form-control" placeholder="whats the reward for the challenge" required></textarea>
+                    </div> 
+                    <div class="form-group">
+                        <input type="number" name="target_winners" class="form-control" placeholder="How many winners are you looking for" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Day of Challenge</label>
+                        <input type="date" name="day_of_the_challenge" class="form-control" placeholder="Day of Challenge" required>
+                    </div>
+                    
+                    <div class="form-group m-0 btn_g">
+                        <button class="theme_btn btn" id="registerButton" type="submit" >Create Challenge</button>
+                    </div>
+                </form>
+        </div>
+
+        
+    </div>
+</section>
+<!-- Get In Touch With Us Area -->
+<script>
+    // Add an event listener to the form submission
+    document.addEventListener('DOMContentLoaded', function () {
+        const loginButton = document.getElementById('registerButton');
+        const form = loginButton.closest('form'); // Find the closest form element
+
+        if (form) {
+            form.addEventListener('submit', function () {
+                // Disable the button
+                loginButton.disabled = true;
+
+                // Update the button text
+                loginButton.textContent = "creating challenge...";
+            });
+        }
+    });
+</script>
+{% endblock %}

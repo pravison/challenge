@@ -1,0 +1,485 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block title %} - Bring More Customers to Your Store and Keep Them Coming Back!{% endblock %}
+{% block keyword %}{% endblock %}
+{% block description %}{% endblock %}
+
+{% block content %}
+
+<!-- Banner Area -->
+<section class="banner_area banner_a2">
+    <img src="{% static 'images/banner-bg-style-2.png' %}" alt="" class="banner_bg">
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+
+            {% endfor %}
+        {% endif %}
+        <h1 class="wow fadeIn" style="color: white; font-size: xxx-large;">Bring More Customers to Your Store and Keep Them Coming Back! </h1>
+        <p class="wow fadeIn" data-wow-delay="0.2s">At Challenge, we specialize in helping retail businesses attract foot traffic and turn every vistor into aloyal cutomer. From innovative marketing to gamefied loyalty programs, we make sure your store stays busy and your customers keep coming back.</p>
+        <a href="{% url 'index' %}#pricing" class="theme_btn wow fadeIn" data-wow-delay="0.4s">Start Driving Traffic Today  </a>
+    </div>
+    <img src="{% static 'images/banner-images-2.webp' %}" alt="" class="banner_img wow fadeInRight">
+</section>
+<!-- Banner Area -->
+
+<!-- Analytics Area -->
+<section class="analytics_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 wow fadeInDown" data-wow-delay="0.4s">
+                <div class="analytics">
+                    <!-- <div class="icons"><i class="far fa-gem"></i></div> -->
+                    <a href="#"> Promotional Qr Code </a>
+                    <p>attract customer with promotional capmaigns on qr-code placed at strategic places </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInDown" data-wow-delay="0.2s">
+                <div class="analytics analytics_2">
+                    <!-- <div class="icons"><i class="far fa-chart-bar"></i></div> -->
+                    <a href="#">Engaging Challenges</a>
+                    <p>engage customers with fun challenges and rewards</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInDown">
+                <div class="analytics analytics_3">
+                    <!-- <div class="icons"><i class="far fa-object-ungroup"></i></div> -->
+                    <a href="#">Store Exploration</a>
+                    <p>qr-codes randomly in the store to encourage customers to explore the store while hunting for coupons</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'images/agency-banner-bg-style-2.png' %}" alt="" class="layer bg_style" data-depth="0.10">
+</section>
+<!-- Analytics Area -->
+
+<!-- Counter Section Area -->
+<section class="countarup_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 wow fadeInLeft">
+                <div class="years_fild">
+                    <!-- <h4>Years in the Field</h4> -->
+                    <h1 class="counter">3</h1>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 wow fadeInUp">
+                <div class="customer">
+                    <h4>Happy Customer</h4>
+                    <h3><span class="counter">49 </span>+</h3>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="customer">
+                    <h4>Challenges Created</h4>
+                    <h3><span class="counter">503</span><span>+</span></h3>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 wow fadeInUp" data-wow-delay="0.4s">
+                <div class="customer">
+                    <h4>Average Revenue Increase</h4>
+                    <h3><span class="counter">38</span>%</h3>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="client_logo_area">
+                    <div class="owl-carousel client_logo">
+                        <div class="item"><a href="#" class="active"><img src="{% static 'images/client-logo-5.jpg' %}" style="height: 100px; width: auto;" alt=""></a></div>                               
+                        <div class="item"><a href="#"><img src="{% static 'images/client-logo-1.png' %}" style="height: 100px; width: auto;" alt=""></a></div>
+                        <div class="item"><a href="#"><img src="{% static 'images/client-logo-2.jpg' %}" style="height: 100px; width: auto;" alt=""></a></div>
+                        <div class="item"><a href="#" ><img src="{% static 'images/logo.jpg' %}" style="height: 100px; width: auto;" alt=""></a></div>
+                        <div class="item"><a href="#"><img src="{% static 'images/client-logo-3.png' %}" alt=""></a></div>
+                        <div class="item"><a href="#"><img src="{% static 'images/client-logo-4.png' %}" alt=""></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Counter Section Area -->
+
+<!-- What we do section -->
+<section class="seo_insights" id="what-we-do">
+    <div class="row">
+        <div class="col-lg-5 recovered_img wow fadeInLeft">
+            <img src="{% static 'images/blog/blog-post-2.png' %}" alt="">
+        </div>
+        
+        <div class="col-lg-7">
+            <div class="insights_contant wow fadeInRight">
+                <h2>What We Do</h2>
+                <div class="list_line">
+                    <h4>We help retail businesses:</h4>
+                    <h6><b>Attract New Customers - </b><br/>By designing creative strategies that drive foot traffic straight to your store</h6> <br/>
+                    <h6><b>Increase Reapeat Purchases - </b><br>Through gamefied loyalty programs that make sopping fun and rewarding.</h6> <br/>
+                    <h6><b>Boost In-Store Sales - </b><br/>by creating engaging experience that encourage customers to explore, spend more and return again</h6> <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End  -->
+
+<!-- How We Do it section -->
+<section class="seo_insights" id="how-we-do-it">
+    <div class="row">
+        
+        <div class="col-lg-7">
+            <div class="insights_contant wow fadeInRight">
+                <h2>How We Do It</h2>
+                <div class="list_line">
+                    <h6><b>Traffic driving Campaign: </b><br/>We strategically place qr codes with promotional coupons that customers can redeem inside the store</h6> <br/>
+                    <h6><b>Gamefied Retention Programs:</b><br>Redeemed Coupons, Enters customer into a challenge to win exclusive rewards. making shopping exciting and encourage repeat visits</h6> <br/>
+                    <h6><b>In-Store Optimization - </b><br/>We place qr codes with coupon codes randomly in the store, encouraging customers to explore the shop to find the coupons, thus turning casual visits into bigger sales.</h6> <br/>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 recovered_img wow fadeInLeft">
+            <img src="{% static 'images/seo-recovered.png' %}" alt="">
+        </div> 
+    </div>
+</section>
+<!-- End  -->
+
+<!-- benefits Section -->
+<section class="seo_insights" id="benefit">
+    <div class="row">
+        <div class="col-lg-5 recovered_img wow fadeInLeft">
+            <img src="{% static 'images/benefits.webp' %}" alt="">
+        </div>
+        <div class="col-lg-7">
+            <div class="insights_contant wow fadeInRight">
+                <h2>Why Choose Challenge?</h2>
+                <div class="list_line" style="padding-bottom: 5px;">
+                    <div class="icons icons_2"><i class="far fa-chart-bar"></i></div>
+                    <h4>Focused on Results:</h4>
+                    <p>We dont just bring people to your store-we make sure they keep coming back.</p>
+                </div>
+                <div class="list_line" style="padding-bottom: 5px;">
+                    <div class="icons icons_2"><i class="far fa-chart-bar"></i></div>
+                    <h4>Unique Gamefication Strategies:</h4>
+                    <p>Engage your customers in a way they've never seen before.</p>
+                </div>
+                <div class="list_line" style="padding-bottom: 5px;">
+                    <div class="icons icons_2"><i class="far fa-chart-bar"></i></div>
+                    <h4>Tailored to Your Business:</h4>
+                    <p>Our strategies are custom-designed for your store, your customers, and your goals.</p>
+                </div>
+                <div class="list_line" style="padding-bottom: 5px;">
+                    <div class="icons icons_2"><i class="far fa-chart-bar"></i></div>
+                    <h4>Proven to work:</h4>
+                    <p>Our solutions are built on what drives real-world results</p>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End-->
+
+<!-- Testimonial -->
+<section class="testimonial_area" id="testimonial">
+    <div class="row">
+        <div class="col-lg-5 user_img">
+            <img src="{% static 'images/user-img.png' %}" alt="">
+        </div>
+        <div class="col-lg-7 testimonial">
+            <div class="tittle">
+                <h4>Social Proof</h4>
+                <h2>Trusted by Businesses Like <br>Yours</h2>
+            </div>
+            <div class="owl-carousel testimonial_carousel">
+                <div class="item">
+                    <div class="testimonial_item">
+                        <p>they've helped my store attract more people, especially the use of gamified ideas like QR code and rewards keep customers comming back.</p>
+                        <div class="media">
+                            <img src="{% static 'images/mukanda.jpeg' %}" alt="">
+                            <div class="media-body">
+                                <a href="#">Mukanda William</a>
+                                <h6>Pharmacists</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="item">
+                    <div class="testimonial_item">
+                        <p>Our approach has empowered local, national, and global brands to grow their businesses and achieve a competitive advantage and we can do the same for you.</p>
+                        <div class="media">
+                            <img src="images/author-2.png" alt="">
+                            <div class="media-body">
+                                <a href="#">Mahfuz Riad</a>
+                                <h6>Boutiques</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Testimonial -->
+
+<!-- Service Icon Area -->
+<section class="service_icon_area sia_2" id="services">
+    <div class="container">
+        <div class="tittle">
+            <div class="nav_control">
+                <a href=".si_carousel" role="button" data-slide="prev"><i class="flaticon-left-arrow"></i></a>
+                <a class="next" href=".si_carousel" role="button" data-slide="next"><i class="flaticon-next"></i></a>
+            </div>
+            <h2>What Challenge Can Do For You</h2>
+        </div>
+        <div class="carousel slide si_carousel" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row">
+                        <div class="col-xl-4 col-md-6 wow">
+                            <div class="single_box">
+                                <a href="#services" class="heding"> Foot Traffic Boost </a>
+                                <p>Attract more customers to your store with creative promotional campaigns and strategies that drive consistent in-store visits </p>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-6 wow">
+                            <div class="single_box">
+                                <a href="#services" class="heding">Gamified Loyalty Programs</a>
+                                <p>Engage customers with fun challenges and rewards, making every visit exciting and ensuring they keep coming back</p>
+                                
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-6 wow">
+                            <div class="single_box">
+                                <a href="#services" class="heding">In-Store Engagement Optimization  </a>
+                                <p>Create unforgettable shopping experiences that increase sales by encouraging customers explore and spend more </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-xl-4 col-md-6 wow">
+                            <div class="single_box">
+                                <a href="#services" class="heding"> Foot Traffic Boost </a>
+                                <p>Attract more customers to your store with creative promotional campaigns and strategies that drive consistent in-store visits </p>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-6 wow">
+                            <div class="single_box">
+                                <a href="#services" class="heding">Gamified Loyalty Programs</a>
+                                <p>Engage customers with fun challenges and rewards, making every visit exciting and ensuring they keep coming back</p>
+                                
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-6 wow">
+                            <div class="single_box">
+                                <a href="#services" class="heding">In-Store Engagement Optimization  </a>
+                                <p>Create unforgettable shopping experiences that increase sales by encouraging customers explore and spend more </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'images/agency-banner-bg-style-3.png' %}" alt="" class="bg_style" data-depth="0.10">
+</section>
+<!-- End Service Icon Area -->
+
+<!-- About us -->
+<section class="agency_task at_2" id="about">
+    <div class="row">
+        <div class="col-lg-7 wow fadeInLeft">
+            <div class="agency_contant">
+                <h5>About Us</h5>
+                <div class="agency_contant">
+                    <h2>Turn Shoppers into Loyal Fans With a Challenge They Can't Resist!</h2>
+                    <p>
+                        At Challenge, we understand the frustration of seeing potential customers walk past your store without stepping in 
+                        and the dissappointment of customers who buy once, but never return.
+                        We've been there-spending hours crafting promotional messages only to see little response
+                        </p><br>
+                        <p>
+                        That's why we decide to do things differently. 
+                        Instead of bombarnding customers with constant offers, we created a way to make them want to come back.
+                        By gamifying customer retention, we turn shopping into an exciting challenge.
+                        </p><br>
+                        <p>
+                        Imagine Customers coming into your store not just to buy but to win-whether it's exclusive rewards, discounts, 
+                        or even a fully-paid shopping experience. 
+                        </p><br>
+                        <p>
+                        <b>Our mission is simple</b> 
+                        to help your store thrive by attracting foot traffic and turning one-time shopper into a loyal excited customer.
+                        with challenge you'll never have to beg for attention again-you customers will keep coming back, ready to play, shop and win.
+                        </p><br>
+                        <p>
+                        We're here to make customer loyalty fun, engaging and effective.
+                        Let's turn your store into a destinationthey'll never forget!. 
+                        </p>
+                    <div class="media">
+                        <img src="{% static 'images/task_sahdwo.jpg' %}" alt="">
+                        <div class="media-body">
+                            <h1><span class="counter">49</span>+</h1>
+                            <h6>Happy Customers</h6>
+                        </div>
+                    </div>
+                    <a href="{% url 'inquire' %}?plan=once" class="task_btn">Get a Free Website Analytics Report Today!</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 agency_task_img wow fadeInRight">
+            <img src="{% static 'images/left_bg-2.png' %}" alt="">
+        </div>
+    </div>
+    <img src="{% static 'images/fouc_left_.png' %}" class="layer focus_bg" data-depth="0.35" alt="">
+</section>
+<!-- Agency Task Area End -->
+
+<!-- Team Area -->
+<!-- <section class="team_area" id="team">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="team">
+                    <img src="{% static 'images/team-1.png' %}" alt="">
+                    <a href="#">David Otieno</a>
+                    <h6>GRAPHIC DESIGNER</h6>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="team">
+                    <img src="{% static 'images/pravison.jpg' %}" alt="">
+                    <a href="#">Pravison Juma</a>
+                    <h6>Web Developer</h6>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="team">
+                    <img src="{% static 'images/team-3.png' %}" alt="">
+                    <a href="#">Meshak Okumu</a>
+                    <h6>Video Expert</h6>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="team">
+                    <img src="{% static 'images/feisal.jpg' %}" alt="">
+                    <a href="#">Feisal Vukayaga</a>
+                    <h6>Marketing Expert</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+<!-- Team Area -->
+
+<!-- Pricing Plan -->
+<section class="pricing_plan pp_2" id="pricing">
+    <div class="container">
+        <div class="tittle">
+            <h2>Pricing Plan</h2>
+            <p>Select Your Favourable Plan</p>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+
+            {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.4s">
+                <div class="plan plan_3">
+                    <h3>Yearly<br/> <b>125,000 ksh</b></h3>
+                    <h6>renewable yearly and you get</h6>
+                    <ul>
+                        <li>unlimitted qr codes</li>
+                        <li>unlimittted challanges </li>
+                        <li>We manage conntent clippers for you</li>
+                        <li>We shoot videos For you</li>
+                    </ul>
+                    <a href="{% url 'register_user' %}?pricing_plan=yearly" class="theme_btn">Start now</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.2s">
+                <div class="plan plan_2">
+                    <h3>Semi Annually<br/> <b>17,500 ksh.</b></h3>
+                    <h6>renewable semi-annually and you get</h6>
+                    <ul>
+                        <li>unlimitted qr codes</li>
+                        <li>unlimittted challanges </li>
+                        <li>access to conntent clippers</li>
+                        <li>Support in Getting video creators</li>
+                    </ul>
+                    <a href="{% url 'register_user' %}?pricing_plan=semi_yearly" class="theme_btn">Start now</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeIn">
+                <div class="plan active">
+                    <h3>Monthly<br/> <b>3,500 ksh.</b></h3>
+                    <h6>renewable monthly and you get</h6>
+                    <ul>
+                        <li>unlimitted qr codes</li>
+                        <li>unlimittted challanges </li>
+                        <li>Support in Getting video creators</li>
+                        <li>Support in acquiring conntent clippers</li>
+                    </ul>
+                    <a href="{% url 'register_user' %}?pricing_plan=monthly" class="theme_btn">Start now</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+<!-- End Pricing Plan -->
+
+<!--blog posts -->
+<!-- <section class="blog_posts_area">
+    <div class="container">
+        <h2>We believe in sharing Check out our blog posts</h2>
+        <div class="row m-0">
+            <div class="col-lg-6 bp_item active">
+                <div class="blog_img">
+                    <img src="{% static 'images/blog/blog-post-1.png' %}" alt="">
+                    <span><b>12</b> Sep</span>
+                </div>
+                <div class="blog_contant">
+                    <a href="blog-details.html">A good content strategy can help engage your consumers</a>
+                    <p>A good content strategy can help engage your consumers and position your company as an effective publisher in your industry. In turn, this will play a role in increasing brand recognition, traffic to your website, lead conversions,
+                        and customer loyalty</p>
+                </div>
+            </div>
+            <div class="col-lg-6 bp_item">
+                <div class="blog_img bi_2">
+                    <img src="{% static 'images/blog/blog-post-2.png' %}" alt="">
+                    <span><b>12</b> Sep</span>
+                </div>
+                <div class="blog_contant">
+                    <a href="blog-details.html">As a digital marketing agency, we specialize in lead generation</a>
+                    <p>As a digital marketing agency, we specialize in lead generation, inbound marketing, conversion optimization, and sales nurturing. Our digital process is data-driven and highly iterative We focus on metrics that measurably boost
+                        your business' growth.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+<!--blog posts -->
+
+<section class="get_touch">
+    <div class="container">
+        <p>Don't let your store go unnoticed! leat us help you fill your space with customres who keep comming back.</p>
+        <a href="{% url 'index' %}#pricing" class="theme_btn">Start Driving Traffic Today</a>
+    </div>
+    <span></span>
+</section>
+
+{% endblock %}

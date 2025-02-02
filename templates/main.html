@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <link href="{% static 'images/logo.png' %}" rel="icon">
+    <link href="{% static 'images/logo.png' %}" rel="apple-touch-icon">
+    <!-- Theme tittle -->
+    <title>Challenge {% block title %} {% endblock %}</title>
+
+    <!-- Theme style CSS -->
+     
+    <link href="{% static 'bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Header Area -->
+    <header class="main_header_area">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'images/logo.png' %}" alt="" style="width: auto; height: 60px;">  
+            </a>
+            <!-- Small Divice Menu-->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar_supported"> 
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse navbar_supported">
+                <ul class="navbar-nav">
+                    {% if request.user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}" class="theme_btn">profile</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login_user' %}" class="theme_btn">Sign In</a></li>
+                    {% endif %}
+
+                    <li><a href="{% url 'index' %}#pricing" class="theme_btn">Get Started Today</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- Header Area -->
+
+    <div id="parallax">
+
+        {% block content %}
+        {% endblock %}
+        <!-- Footer Area Start -->
+        <section class="footer_area">
+            <div class="container">
+                <div class="row bottom_border">
+                    <div class="col-lg-4 col-sm-6 wow fadeIn">
+                        <div class="footer_logo">
+                            <a href="{% url 'index' %}"><img src="{% static 'images/logo.png' %}" alt="" style="width: auto; height: 100px;"></a>
+                            <p>The Sooner you start, the faster you'll see results. Let Challenge help you stand out, grow your sales, and turn one-time shoppers into loyal customers</p>
+                            <a href="{% url 'index' %}#pricing" class="theme_btn">Get Started Now</a>
+                        </div>
+                        
+                    </div>
+                    <div class="col-lg-3 col-sm-6 footer_about wow fadeIn" data-wow-delay="0.2s">
+                        <h3>About Company</h3>
+                        <ul>
+                            <li><a href="#about">about us</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#benefit">Why choose us</a></li>
+                            <li><a href="#testimonial">Testimonials</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-sm-6 footer_about wow fadeIn" data-wow-delay="0.4s">
+                        <h3>Information</h3>
+                        <ul>
+                            <li><a href="#problem">Problems</a></li>
+                            <li><a href="#solution">Our solutions</a></li>
+                            <li><a href="#team">Team</a></li>
+                            <li><a href="#pricing">Pricing plan</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 suppoet_footer wow fadeIn" data-wow-delay="0.6s">
+                        <h3>Challenge</h3>
+                        <p>4th floor Delta Corner, Westland</p>
+                        <p>Nairobi Kenya</p>
+                        <a class="wow" href="wa.me/254705782002">+254705782002</a>
+                        <a class="email" href="mailto:bizchallenge1@gmail.com">bizchallenge1@gmail.com</a>
+                        <ul>
+                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="copy_right">
+                    <div class="row m-0">
+                        <div class="col-lg-9 col-md-8 p-0">
+                            <ul>
+                                <!-- <li><a href="blog.html">NEWS</a></li> -->
+                                <li><a href="https://wa.me//254705782002/">whatsapp(0705782002)</a></li>
+                            </ul>
+                        </div>
+                        <p class="col-lg-3 col-md-4 order-md-first">© 2019 All rights reserved</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+    <!-- Parallax -->
+
+    <!-- Scroll Top Button -->
+    <button class="scroll-top">
+        <i class="fa fa-angle-double-up"></i>
+    </button>
+    <!-- Preloader -->
+    <div class="preloader"></div>
+
+
+
+    <!-- jQuery v3.3.1 -->
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <!-- Bootstrap v4.0.0 -->
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- Extra Plugin -->
+    <script src="{% static 'vendors/animate-css/wow.min.js' %}"></script>
+    <script src="{% static 'vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'vendors/parallaxmouse/parallax.min.js' %}"></script>
+    <script src="{% static 'vendors/counterup/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'vendors/counterup/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'vendors/bootstrap-selector/jquery.nice-select.min.js' %}"></script>
+    <!-- Theme js / Custom js -->
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+
+</html>
