@@ -410,7 +410,7 @@ def view_coupon(request, slug):
                     closed=False
                 ).last()
 
-    qr_url = f"https://example.com/lock-code/{coupon.code}"  # URL to lock the code
+    qr_url = f"{request.scheme}://{request.get_host()}/business/add-coupon/?coupone_code={coupon.code}"  # URL to lock the code
 
     # Generate QR code
     qr = qrcode.QRCode(version=1, box_size=2.5, border=1)
