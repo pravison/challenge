@@ -1,0 +1,101 @@
+
+{% extends 'business/main.html' %}
+{% load static %}
+{% load humanize%}
+{% block title %} {{ coupon.customer}} {% endblock%}
+{% block content %}
+<style>
+        .coupon-card {
+            width: 280px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #007bff, #ffcc00);
+            padding: 10px;
+            color: white;
+            margin: auto;
+            text-align: center;
+        }
+        .coupon-code {
+            background-color: white;
+            color: black;
+            padding: 5px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .qr-code {
+            margin-top: 15px;
+        }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
+
+<main id="main" class="main">
+    
+    <div class="pagetitle">
+      <h1>{% if coupon.customer %}Coupon Code Aready taken{% else %} Coupon Code Available {% endif %}</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'profile' %}">Profile</a></li>
+          
+          <li class="breadcrumb-item active">Today's Date: {{today}}</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section profile">
+        <div class="row">
+        	{% if messages %}
+		    {% for message in messages %}
+		      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+		        {{ message }}
+		        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		      </div>
+
+
+		    {% endfor %}
+		    {% endif %}
+		    {% if coupon != ''%}
+            <div class="container mt-5">
+                <div class="coupon-card" id="couponCardId">
+                    <p>The coupone code below </p>
+                    <div class="coupon-code">{{ coupon.code }}</div>
+                    <h6 style="color: black;"><b>has been added to a draw to win {{challenge.challenge_reward}}</b></h6>
+                    <p>plus use it to get {{coupon.discount}}% Off on {{coupon.coupone_apply_to}}!</p>
+                    
+                    <h6 style="margin-bottom: 5px; color: black;"><b>Make sure to lock the code to yourself so as not to be used by another customer</b></h6>
+                    <h6 style="margin-bottom: 5px; color: black;"><b>Because This Code might be the one winning the offer </b></h6>
+    
+                </div>
+                
+                <canvas id="canvas" style="display: none;"></canvas>
+
+            </div>
+            <p class="icon coupon-card mt-2" >
+            {% if request.user.is_authenticated %}
+            <a class="icon" id="downloadBtn" style="color: white;" href="{% url 'add_coupon' %}?coupone_code={{coupon.code}}&customer_email={{request.user.email}}">Click to Lock the Coupone Code To Yourself</a><br/>
+            <p>
+            {% else %}
+            <a class="icon" id="downloadBtn" style="color: white;" href="{% url 'login_user' %}?coupone_code={{coupon.code}}">Click to Sign in and Lock the Coupone Code To Yourself</a><br/>
+            <p>
+            {% endif %}
+            <p class="coupon-card"><b>OR visit {{challenge.business.address}} <br/> to Lock the Coupone Code To Yourself before anyone else does<p></p>
+
+		    {% endif %}
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+<script>
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const targetDiv = document.getElementById('couponCardId');
+
+        // Display download progress message
+        downloadBtn.innerText = 'Redirecting...';
+        downloadBtn.disabled = true;
+
+        
+    });
+</script>
+{% endblock %}

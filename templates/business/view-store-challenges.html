@@ -4,6 +4,30 @@
 {% block title %} {{ challenge.challenge_name}} {% endblock%}
 {% block content %}
 
+<style>
+        .coupon-card {
+            width: 280px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #007bff, #ffcc00);
+            padding: 10px;
+            color: white;
+            margin: auto;
+            text-align: center;
+        }
+        .coupon-code {
+            background-color: white;
+            color: black;
+            padding: 5px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .qr-code {
+            margin-top: 15px;
+        }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
 <main id="main" class="main">
     {% if messages %}
     {% for message in messages %}
@@ -38,10 +62,29 @@
               
             </div>
           </div>
+          <!-- display qr code that customers can scan and get random qrcoded added to partiipate in the challenge -->
+          <div class="card">
+            <div class="">
+              <div class="container mt-2 mb-1 ms-1 align-items-center">
+                <div class="coupon-card" id="couponCardId">
+                    <h3><b>{{ business.business_name|title }}</b>
+                    </h3>
+                      <p style="text: small">{{ business.address }}</p>
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code" class="img-fluid">
+                    </div>
+                    <h6 class="mt-2" style="color: black;"><b>Scan the QR code above to stand a chance to win {{challenge.challenge_reward}}</b></h6>
+                </div>
+                <canvas id="canvas" style="display: none;"></canvas>
+                
+                <button class="btn btn-primary coupon-card mt-1 " id="downloadBtn">Download Qr Code</button>
+              </div>
+            </div>
+          </div>
           {% if staff %}
           <div class="card">
             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-              <a class="icon" href="{% url 'view_store_challenge' business.slug %}?challenge_id={{challenge.id}}&select_winners=select_winners&next_url={{request.build_absolute_uri}}">Click To Select Winners</a>
+              <a class="icon coupon-card" href="{% url 'view_store_challenge' business.slug %}?challenge_id={{challenge.id}}&select_winners=select_winners&next_url={{request.build_absolute_uri}}">Click To Select Winners</a>
               
             </div>
           </div>
@@ -199,4 +242,47 @@
     </section>
 
 </main><!-- End #main -->
+
+<script>
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const targetDiv = document.getElementById('couponCardId');
+
+        // Display download progress message
+        downloadBtn.innerText = 'Download in Progress...';
+        downloadBtn.disabled = true;
+
+        domtoimage.toPng(targetDiv, { 
+            quality: 1,
+            bgcolor: "white",
+            style: {
+                width: '280px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #007bff, #ffcc00)',
+                padding: '10px',
+                color: 'white',
+                margin: 'auto',
+                textAlign: 'center',
+                fontFamily: 'Arial, sans-serif'
+            }
+        })
+        .then(function (dataUrl) {
+            const link = document.createElement('a');
+            link.download = `coupone-code-{{coupon.id}}.png`;
+            link.href = dataUrl;
+            link.click();
+
+            // Reset download button text after download
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
+        })
+        .catch(function (error) {
+            console.error('Oops, something went wrong!', error);
+
+            // Reset download button text if an error occurs
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
+        });
+    });
+</script>
   {% endblock %}

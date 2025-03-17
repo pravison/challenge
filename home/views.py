@@ -155,8 +155,11 @@ def profile(request):
 def register_user(request):
     pricing_plan = request.GET.get('pricing_plan') or ''
     add_staff_to = request.GET.get('add_staff_to') or ''
-    add_customer_to = request.GET.get('add_customer_to') or ''  # Corrected this line
+    add_customer_to = request.GET.get('add_customer_to') or ''  # Corrected this line   
     code = request.GET.get('code') or ''
+    coupon_code = request.session.get('coupon_code') or ''
+    if coupon_code:
+        code = coupon_code
     next = request.GET.get('next') or ''
     print(add_customer_to)
     print(code)
@@ -252,6 +255,11 @@ def register_user(request):
 
 def login_user(request):
     next = request.GET.get('next') or ''
+    coupon_code = request.GET.get('coupone_code') or ''
+
+    if coupon_code != '':
+        request.session['coupon_code'] = 'coupon_code'
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -260,8 +268,41 @@ def login_user(request):
         
         if user is not None:
             login(request, user)
-            
-            messages.success(request, "You Have Been Logged In!")
+
+            coupon_code = request.session.get('coupon_code')
+            if coupon_code:
+                coupon = Coupone.objects.filter(code=coupon_code).first()
+                # confirm if coupon exists
+                business = coupon.business
+                
+                if coupon.customer:
+                        messages.success(request, 'Unfortunatly!!! Coupon Already Taken')
+                        customer = Customer.objects.filter(user=request.user).first() 
+                        if customer is None:
+                            customer = Customer.objects.create(user=user)
+                        if customer not in business.customers.all():
+                            business.customers.add(customer)
+                else:
+                    # we query user from database
+                    user=request.user
+                    staff = Staff.objects.filter(business=business, user=user).first()
+                    if staff:
+                        messages.success(request, 'Staffs not allowed to participate!')
+                        if next_url !='':
+                            return redirect(next_url)
+                        return redirect('profile')
+                    customer = Customer.objects.filter(user=user).first()
+                    if customer is None:
+                        customer = Customer.objects.create(user=user) 
+                    coupon.customer =  customer
+                    coupon.save()
+
+                    if customer not in business.customers.all():
+                        business.customers.add(customer)
+                    messages.success(request, 'You have succesfully locked the coupone code to yourself !!!')
+                    messages.success(request, 'Now you stand a chance to win the offer !!!')
+                
+                messages.success(request, "You Have Been Logged In!")
             if next != '':
                 return redirect(next)
             return redirect('profile')

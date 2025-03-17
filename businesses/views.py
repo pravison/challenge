@@ -110,6 +110,8 @@ def add_coupon(request): # assign coupon to customer
             if coupon.customer:
                     messages.success(request, 'Sorry!!! Coupon Already Taken')
                     customer = Customer.objects.filter(user=request.user).first() 
+                    if customer is None:
+                        customer = Customer.objects.create(user=user)
                     if customer not in business.customers.all():
                         business.customers.add(customer)
             else:
@@ -508,6 +510,20 @@ def view_store_challenge(request, slug):
     challenge = StoreChallenge.objects.filter(id=challenge_id).first()
     staff = Staff.objects.filter(business=business, user=request.user)
 
+    qr_url = f"{request.scheme}://{request.get_host()}/business/{slug}/stand-a-chance-to-win/?challenge_id={challenge_id}"  # URL to lock the code
+
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=5, border=2)
+    qr.add_data(qr_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Save QR code to memory
+    buffer = BytesIO()
+    img.save(buffer, format='PNG')
+    qr_code_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    buffer.close()
+
     if select_winners !='':
         #check if winners already selceted 
         # check if today is greator than challenge date 
@@ -563,6 +579,7 @@ def view_store_challenge(request, slug):
             return redirect('store_challenges', slug)
 
     context={
+        'qr_code_image': qr_code_image,
         'businesses': businesses,
         'staff': staff,
         'business': business,
@@ -570,7 +587,40 @@ def view_store_challenge(request, slug):
     }
     return render(request, 'business/view-store-challenges.html', context)
 
+def add_challenge_participant(request, slug):
+    challenge_id = request.GET.get('challenge_id')
+    # businesses = Business.objects.filter(owner=request.user) or None
+    business = Business.objects.filter(slug=slug).first()
+    challenge = StoreChallenge.objects.filter(id=challenge_id).first()
+    # staff = Staff.objects.filter(business=business, user=request.user) or None
+    today = date.today()
+    coupon = ''
 
+    if challenge.closed:
+        messages.success(request, f"visit {business.business_name} @ {business.address} for More Information!!!")
+    else:
+        coupones = Coupone.objects.filter(business=business, used=False).order_by('-id')
+        valid_coupons = [c for c in coupones if c.expiry_date >= datetime.now().date()]
+
+        existing_participants = set(challenge.participants.all())  # Convert to set for fast lookup
+        available_coupons = [c for c in valid_coupons if c not in existing_participants]
+
+        if not available_coupons:
+            messages.success(request, f"Visit {business.business_name} @ {business.address} for more information!")
+        else:
+            # Randomly select a coupon that is not already a participant
+            coupon = random.choice(available_coupons)
+            challenge.participants.add(coupon)  # Add the selected coupon to participants
+
+    context={
+        # 'businesses': businesses,
+        # 'staff': staff,
+        'today': today,
+        'business': business,
+        'challenge':challenge,
+        'coupon': coupon
+    }
+    return render(request, 'business/add-challenge-participant.html', context)
 
 def generate_unique_refferal_code():
     while True:
