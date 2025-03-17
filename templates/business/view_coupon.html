@@ -26,7 +26,7 @@
             margin-top: 15px;
         }
 </style>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 
 
 <main id="main" class="main">
@@ -101,7 +101,7 @@
       });
     });
   </script> -->
-<!-- <script>
+<script>
     document.getElementById('downloadBtn').addEventListener('click', function () {
         const downloadBtn = document.getElementById('downloadBtn');
         const targetDiv = document.getElementById('couponCardId');
@@ -142,38 +142,9 @@
             downloadBtn.disabled = false;
         });
     });
-</script> -->
-<!-- <script>
-    document.getElementById('downloadBtn').addEventListener('click', function () {
-        const downloadBtn = document.getElementById('downloadBtn');
-        const targetDiv = document.getElementById('couponCardId');
-        const canvas = document.getElementById('canvas');
-        
-        // Inform the user that the download is in progress
-        downloadBtn.innerText = 'Download in Progress...';
-        downloadBtn.disabled = true;
+</script>
 
-        html2canvas(targetDiv, { 
-            scale: 2, // Makes the image clearer
-            backgroundColor: null,
-            useCORS: true
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `coupone-code-{{coupon.id}}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-
-            // Reset button state
-            downloadBtn.innerText = 'Download Coupon Code';
-            downloadBtn.disabled = false;
-        }).catch(function (error) {
-            console.error('Oops, something went wrong!', error);
-            downloadBtn.innerText = 'Download Coupon Code';
-            downloadBtn.disabled = false;
-        });
-    });
-</script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
     document.getElementById('downloadBtn').addEventListener('click', function () {
         const downloadBtn = document.getElementById('downloadBtn');
@@ -203,7 +174,7 @@
             downloadBtn.disabled = false;
         });
     });
-</script>
+</script> -->
 
 
 
