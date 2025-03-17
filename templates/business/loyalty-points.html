@@ -1,0 +1,87 @@
+{% extends 'business/main.html' %}
+{% load static %}
+{% load humanize%}
+{% block title %} Loyalty Categories {% endblock%}
+{% block content %}
+
+<main id="main" class="main">
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+
+    {% endfor %}
+{% endif %}
+
+    <div class="pagetitle">
+      <h1>Loyalty Points Tables</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' business.slug %}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'add_loyalty_points_to_customer' business.slug %}">Add Points</a></li>
+          
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body overflow-auto">
+              <h5 class="card-title">Loyalty Points</h5>
+              {% if messages %}
+                  {% for message in messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+
+                  {% endfor %}
+              {% else %}
+                  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    search anything 
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+              {% endif %}
+              
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Points Earned </th>
+                    <th scope="col">Purchase Value</th>
+                    <th scope="col">Loyalty Category</th>
+                    <th scope="col">Added By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for point in loyalty_points %}
+                  <tr>
+                    <td scope="row">{{point.customer}}</td>
+                    <td scope="row">{{point.points_earned}}</td>
+                    <td  scope="row">{{ point.purchase_value}}</td>
+                    <td  scope="row">{{ point.category}}</td>
+                    <td scope="row">{{point.added_by}}</td>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+</main><!-- End #main -->
+{% endblock %}

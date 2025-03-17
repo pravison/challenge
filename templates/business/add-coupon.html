@@ -19,11 +19,16 @@
                     </div>
                     {% endfor %}
                 {% endif %}
-                <form class="from_main" action="{% url 'add_coupon' %}" method="POST">
+                <form class="from_main" action="{% url 'add_coupon' %}?next_url={{next_url}}" method="POST">
                     {% csrf_token %}
-                    
+                    <div class="form-group {% if customer_email %} visually-hidden {% endif %}">
+                        <input type="email" name="customer_email" class="form-control" value="{{customer_email}}"placeholder="Customer Email" required>
+                    </div>
                     <div class="form-group">
-                        <input type="text" name="coupon_code" class="form-control" placeholder="Coupon Code" required>
+                        {% if coupone_code %}
+                        <label>Coupon Code</label>
+                        {% endif %}
+                        <input type="text" name="coupon_code" class="form-control" value="{{coupone_code}}" placeholder="Coupon Code" required>
                     </div>
                     <div class="form-group m-0 btn_g">
                         <button class="theme_btn btn" id="registerButton" type="submit" >Click To Add</button>

@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from datetime import date
-from businesses.models import Business, Staff, Coupone, StoreChallenge
+from businesses.models import Business, Staff, Coupone, StoreChallenge, RefferralCode, BusinessCustomer
 from customers.models import Customer
 # Create your views here.
 from django.shortcuts import render, redirect
@@ -111,21 +111,31 @@ def profile(request):
     customer = Customer.objects.filter(user=request.user).first()
     if not Customer.objects.filter(user=request.user).exists():
         customer = Customer.objects.create(user=request.user)
+        #customer is addeded to business model as many to many relationship and also added to businessCustomer model
+    # business_customer = BusinessCustomer.objects.filter(customer=customer) or [] 
+    customer_businesses = Business.objects.filter(customers=customer).prefetch_related("challenges") #business user has participated in their challange
 
     today = date.today()
+    #checking if request.user is a staff in any business account
     staff_businesses = Staff.objects.filter(user=request.user)
+    #checking if request.user has business account and quering tem
     businesses = Business.objects.filter(owner=request.user)
 
+    # getting coupones customer has
     coupones = list(Coupone.objects.filter(customer=customer).order_by('-id'))
+    # getting all cahllenges customer paarticipated in 
     challenges = StoreChallenge.objects.filter(participants__customer=customer).order_by('-id')
+    # getting active challenges customer is participating in
+    active_challenges = challenges.filter(closed=False)
+    challenges_count = active_challenges.count()
 
     active_coupones_count = sum(
         1 for c in coupones if not c.used and c.date_created > today - timedelta(days=Coupone._meta.get_field('expiry_in').default)
     )
-
-    customer_businesses = Business.objects.filter(customers=customer)
-    active_challenges = StoreChallenge.objects.filter(participants__customer=customer, closed=False)
-    challenges_count = active_challenges.count()
+    #Business.objects.filter(challenges__participants=creator).distinct().prefetch_related("challenges") #business user has participated in their challange
+    
+    
+    refferal_codes = RefferralCode.objects.filter(customer=customer)
 
     context = {
         'businesses': businesses,
@@ -136,6 +146,8 @@ def profile(request):
         'active_coupones_count': active_coupones_count,
         'customer_businesses': customer_businesses,
         'staff_businesses': staff_businesses,
+        'refferal_codes' : refferal_codes,
+        # 'business_customer': business_customer
     }
     return render(request, 'home/profile.html', context)
 
@@ -207,6 +219,7 @@ def register_user(request):
                     customer = Customer.objects.create(user=user)
                     if customer not in business.customers.all():
                         business.customers.add(customer)
+
 
                 # Handle coupon code
                 if code != '':

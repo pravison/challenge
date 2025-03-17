@@ -1,0 +1,116 @@
+
+{% extends 'business/main.html' %}
+{% load static %}
+{% load humanize%}
+{% block title %} {{ coupon.customer}} {% endblock%}
+{% block content %}
+<style>
+        .coupon-card {
+            width: 280px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #007bff, #ffcc00);
+            padding: 10px;
+            color: white;
+            margin: auto;
+            text-align: center;
+        }
+        .coupon-code {
+            background-color: white;
+            color: black;
+            padding: 5px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .qr-code {
+            margin-top: 15px;
+        }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
+<main id="main" class="main">
+    {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+
+    {% endfor %}
+    {% endif %}
+    <div class="pagetitle">
+      <h1>{{ coupon.customer}}</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'profile' %}">Profile</a></li>
+          
+          <li class="breadcrumb-item active">Today's Date: {{today}}</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section profile">
+        <div class="row">
+            <div class="container mt-5">
+                <div class="coupon-card" id="couponCardId">
+                    <h3><b>{{ business.business_name|title }}</b></h3>
+                    {% if coupon.coupone_type == 'refferal coupon' %}
+                    <p>bring a friend and both of you use the coupone code below</p>
+                    {% else %}
+                    <p>use the coupone code below </p>
+                    {% endif %}
+                    <div class="coupon-code">{{ coupon.code }}</div>
+                    <p>to get {{coupon.discount}}% Off on {{coupon.coupone_apply_to}}!</p>
+                    {% if challenge %}
+                    <h6 style="color: black;"><b>plus stand a chance to win {{challenge.challenge_reward}}</b></h6>
+                    {% endif %}
+                    <p>Expiry Date: {{ coupon.expiry_date}}</p>
+
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code" class="img-fluid">
+                    </div>
+                    <p style="margin-bottom: 5px;">Scan the QR code to lock the code to yourself!</p>
+                    <p style="margin-bottom: 5px;">coupone number: #{{coupon.id}}</p>
+
+                     
+                </div>
+            </div>
+            <button class="btn btn-primary mt-3" id="downloadBtn">Download Coupon Code</button>
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+<!-- <script>
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+      const targetDiv = document.getElementById('couponCardId');
+      html2canvas(targetDiv).then(canvas => {
+        // Optionally, you can append the canvas to preview
+        // document.body.appendChild(canvas);
+
+        const link = document.createElement('a');
+        link.download = f'coupone-code-{coupon.id}.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => {
+        console.error('Error generating image', err);
+      });
+    });
+  </script> -->
+<script>
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+      const targetDiv = document.getElementById('couponCardId');
+      domtoimage.toPng(targetDiv)
+        .then(function (dataUrl) {
+          const link = document.createElement('a');
+          link.download = f'coupone-code-{coupon.id}.png';
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch(function (error) {
+          console.error('oops, something went wrong!', error);
+        });
+    });
+  </script>
+  {% endblock %}

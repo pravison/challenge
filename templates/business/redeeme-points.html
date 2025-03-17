@@ -61,17 +61,8 @@
     <div class="row" style="justify-content: center;">
         
         <div class="col-lg-6 " >
-            <div class="row" style="justify-content: center;"><b>Share this Page with Your customer to  Create Account</b></div>
-            <div>
-                <div id="popup" class="popup">
-                    <div class="popup-content">
-                        <p>Share this URL:</p>
-                        <input type="text" id="share-url" value="{{request.build_absolute_uri}}" readonly />
-                        <button onclick="copyToClipboard()">Copy</button>
-                        <button onclick="closePopup()">Close</button>
-                    </div>
-                </div>
-            </div>
+            <div class="row" style="justify-content: center;"><b>Redeem Loyalty Points</b></div>
+            
             
             <div class="from_area">
                 {% if messages %}
@@ -84,40 +75,32 @@
                 {% endif %}
                 <form class="from_main" action="#" method="POST" id="loginForm">
                     {% csrf_token %}
-                    <div class="form-group" onclick="showPopup(event)" style="cursor: pointer; align-items: center;">
-                       <a href="">click share this page </a>
+                    <div class="form-group" style="cursor: pointer; align-items: center;">
+                        Redeem Loyalty Points
                     </div>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Enter The Coupone Code below and create an account to lock in for yourself
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Once You lock in no one Will Be able to use the Coupon Code But Yourself
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        The Coupone codes you acquire will help earn a chance win differrent Rewards 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        If You Dont lock in The Code Someone else Will , and you might not know what you have just lost
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Hurry Up Lock in The Code To Youself Before Someone else Does
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                    {% if business_customer == None %}
                     <div class="form-group">
-                        {% if coupone_code %}
-                        <label>Coupone Code</label>
-                        {% endif %}
-                        <input type="text" name="coupone" class="form-control" id="couponInput" value="{{coupone_code}}" placeholder="Enter Your Coupone Code" required>
-                        
+                        <input type="email" name="coupone" class="form-control" id="couponInput" placeholder="Enter customers email" required>
                     </div>
                     
                     <div class="form-group m-0 btn_g">
                         <button class="theme_btn btn" id="loginButton" type="button"> 
-                            <a href="#" id="couponLink" style="color: white;">Click To Create Account</a>
+                            <a href="#" id="couponLink" style="color: white;">submit</a>
+                        </button>
+                    </div>
+                    {% endif %}
+                    <div class="form-group" style="cursor: pointer; align-items: center;">
+                        <h4>Customer: {{business_customer.customer.user.first_name}} {{business_customer.customer.user.last_name}}</h4>
+                        <p>Email: {{business_customer.customer.user.email}}</p>
+                        <p> Total Points: <b>{{business_customer.total_loyal_points}}</b> Points Value: </p>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="coupone" class="form-control" id="couponInput" placeholder="Enter points to redeem" required>
+                    </div>
+                    
+                    <div class="form-group m-0 btn_g">
+                        <button class="theme_btn btn" id="loginButton" type="button"> 
+                            <a href="#" id="couponLink" style="color: white;">submit</a>
                         </button>
                     </div>
                 </form>
@@ -154,11 +137,10 @@
         // Check if the coupon code is provided
         if (couponCode) {
             // If there is a coupon code, append it to the URL
-            var url = "{% url 'register_user' %}?add_customer_to={{business.slug}}&code=" + couponCode;
+            var url = "{% url 'redeemed_loyalty_points' business.slug %}?customer_email=" + couponCode;
             link.href = url;
         } else {
-            var url = "{% url 'register_user' %}?add_customer_to={{business.slug}}";
-            link.href = url;
+            alert('please enter customers email')
         }
     });
 </script>

@@ -15,6 +15,8 @@ class Inquiries(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=25, null=True, blank=True)
+    total_loyalty_points = models.FloatField(default=0)
     date_joined = models.DateTimeField(auto_now_add = True)
     def __str__(self):
         return self.user.first_name 

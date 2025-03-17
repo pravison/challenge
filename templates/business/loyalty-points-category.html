@@ -1,7 +1,7 @@
 {% extends 'business/main.html' %}
 {% load static %}
 {% load humanize%}
-{% block title %} Coupones Lists {% endblock%}
+{% block title %} Loyalty Categories {% endblock%}
 {% block content %}
 
 <main id="main" class="main">
@@ -17,7 +17,7 @@
 {% endif %}
 
     <div class="pagetitle">
-      <h1>Coupones Tables</h1>
+      <h1>Loyalty Categories Tables</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'dashboard' business.slug %}">Dashboard</a></li>
@@ -33,7 +33,7 @@
 
           <div class="card">
             <div class="card-body overflow-auto">
-              <h5 class="card-title">Coupones</h5>
+              <h5 class="card-title">Loyalty Categories</h5>
               <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 search anything 
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -42,27 +42,19 @@
               <table class="table datatable">
                 <thead>
                   <tr>
-                    <th scope="col">Coupone</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Discount</th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Used</th>
-                    <th scope="col">Active</th>
-                    <th scope="col">Expiry Date</th>
-                    <th scope="col">View</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Total Value For a Point</th>
+                    <th scope="col">1 point equals </th>
+                    <th scope="col">Edit</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for coupone in coupones %}
+                  {% for category in loyalty_categories %}
                   <tr>
-                    <th scope="row">{{coupone.code}}</th>
-                    <th scope="row">{{coupone.coupone_type}}</th>
-                    <th scope="row">{{coupone.discount}}%</th>
-                    <td>{{ coupone.customer.user.first_name}} {{ coupone.customer.user.last_name}}</td>
-                    <th scope="row"><a href="{% url 'coupones' business.slug %}?update={{coupone.id}}&next_url={{request.build_absolute_uri}}" title="update"> {% if coupone.used %}Yes {% else %}No {%  endif %}</a></th>
-                    <th scope="row">{% if coupone.date_created|date:"Y-m-d"|add:"{{coupone.expiry_in}}" > now.date|date:"Y-m-d"  %} Yes {% elif now.date|date:"Y-m-d" <  coupone.date_created|date:"Y-m-d"|add:"{{coupone.expiry_in}}" %} No {% else %} Expires Today {% endif %} </th>
-                    <th scope="row">{{coupone.expiry_date}}</th>
-                    <td scope="row"><span class="ms-1"><a href="{% url 'view_coupon' business.slug %}?coupon_id={{coupone.id}}" title='view'><i class="bi bi-eye"></i></a></span></td>
+                    <td scope="row">{{category.category}}</td>
+                    <td scope="row">{{category.total_value_for_a_point}}</td>
+                    <td  scope="row">{{ category.redemed_at_how_much_per_point}} /=</td>
+                    <td scope="row"><a href="{% url 'edit_loyalty_category' business.slug %}?id={{category.id}}" title="update">edit</a></td>
                   </tr>
                   {% endfor %}
                   

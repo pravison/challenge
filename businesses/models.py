@@ -28,31 +28,19 @@ class  Staff(models.Model):
     def __str__(self):
         return f'{self.user.first_name} - {self.business.business_name}'
 
-# class staffAdd(models.Model):
-#     code = models.CharField(max_length=10, editable=False, unique=True)
-#     created_at = models.DateTimeField(default=now)
-
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)    is_valid = models.BooleanField(default=True)
-
-#     def is_expired(self):
-#         # Expire the code after 10 minutes (adjust as needed)
-#         return (now() - self.created_at).total_seconds() > 1200
-
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['user'], condition=models.Q(is_valid=True), name='unique_valid_code_per_user'
-#             )
-#         ]
-
-
-
 
 class Coupone(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='coupone')
     customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.SET_NULL, related_name='coupone')
     code = models.CharField(max_length=8, unique=True)
-    coupone_type = models.CharField(max_length=100, choices=(('redeemed individually', 'redeemed individually'), ('stacked up', 'stacked up'), ('direct ticket to a challenge', 'direct ticket to a challenge'),))
+    coupone_apply_to = models.CharField(max_length=100, choices=(('all products', 'all products'), ('specific products', 'specific products')))
+    coupone_type = models.CharField(max_length=100, choices=(('redeemed individually', 'redeemed individually'), ('stacked up', 'stacked up'), ('direct ticket to a challenge', 'direct ticket to a challenge'), ('refferal coupon', 'refferal coupon'))) #, ('buy x get y product free coupon', 'buy x get y product free coupon')
+    # conditions for coupon to apply
+    # spend_x = models.IntegerField(default=10, null=True, blank=True, help_text='purchase value required for coupon to apply')
+    # buy_x = models.IntegerField(default=10, null=True, blank=True, help_text='number of products customers has to buy for coupon to apply')
+    # get_y = models.IntegerField(default=10, null=True, blank=True, help_text='number of products customer gets for free ') 
+    # leave get_y empty if you want discount to be applied only if customer purchases certain number of product 
+    # if spend_x and buy_x are empty the dicount will be applied without conditions
     discount = models.IntegerField(default=10, help_text='percentage discount')
     date_created = models.DateField(auto_now_add=True)
     expiry_in = models.IntegerField(default=6, help_text='number of days before coupone expires')
@@ -76,10 +64,17 @@ class Coupone(models.Model):
             return f" {int(remaining_seconds//3600)} hours"
         else:
             return 'Expired'
-    
-    
 
-
+#because i hade earlier associated business with cutomers with many to many relationship using customers field in Business model
+# will update the code to use this table    
+class BusinessCustomer(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE) 
+    total_loyal_points = models.IntegerField(default=0)
+    reffered_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, help_text='user who reffered customer')
+    refferal_code = models.CharField(max_length=8, unique=True, null=True, blank=True, help_text='code customer will use to reffer other customers')
+    def __str__(self):
+        return f'{self.customer} - {self.total_loyal_points}'      
 
 class StoreChallenge(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='challenges')
@@ -90,6 +85,7 @@ class StoreChallenge(models.Model):
     day_of_the_challenge = models.DateField(auto_now_add=True)
     participants = models.ManyToManyField(Coupone, blank=True, related_name='participants')
     winners = models.ManyToManyField(Coupone, blank=True, related_name='winners')
+    featured = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     date_created = models.DateField(auto_now_add=True)
     created_by = models.ForeignKey(Staff, blank=True, null=True, on_delete=models.SET_NULL)
@@ -98,13 +94,30 @@ class StoreChallenge(models.Model):
         return self.challenge_name
 
 
+class LoyaltyPointsCategory(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='points_category')
+    category = models.CharField(max_length=100, choices=(('points on purchases made', 'points on purchases made'), ('points on visiting the store', 'points on visiting the store'), ('points on refferal sales', 'points on refferal sales'), ('points on bringing friends to the store', 'points on bringing friends to the store')))
+    total_value_for_a_point = models.IntegerField( help_text=" for purchase made what purchase value equals a point, for visits how many visits eaquals apoint, for refferal sales whats sales value equals a point, and for friends brought to the store how many friends equals a point")
+    redemed_at_how_much_per_point = models.FloatField(default=0.50)
+    edited_by = models.ForeignKey(Staff, blank=True, null=True, on_delete=models.SET_NULL)
+    def __str__(self):
+        return self.category
+
+
 class LoyaltyPoint(models.Model):
-    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='business')
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='points')
     customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(LoyaltyPointsCategory, blank=True, null=True, on_delete=models.SET_NULL)
     purchase_value = models.IntegerField()
-    average_purchase_per_point = models.IntegerField(default=100) 
     points_earned = models.IntegerField()
+    added_by = models.CharField(max_length=200)
+
     def __str__(self):
         return f'{self.customer.user.first_name} {self.customer.user.first_name} points earned: {self.points_earned}'
 
-
+class RefferralCode(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='refferal')
+    customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.SET_NULL)
+    code = models.CharField(max_length=8, unique=True)
+    def __str__(self):
+        return f'{self.customer} - {self.code}'

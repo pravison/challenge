@@ -56,16 +56,16 @@
                 </li>
 
                 <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Challenges</button>
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#offers"> Offers </button>
                 </li>
 
                 <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings"> Businesses </button>
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#loyalty-points"> Loyalty Points </button>
                 </li>
 
               </ul>
               <div class="tab-content pt-2">
-
+                <!-- coupons  -->
                 <div class="tab-pane fade show active profile-overview" id="Coupones">
                     <div class="row">
                         <div class="col-lg-12">
@@ -74,7 +74,7 @@
                             <div class="card-body overflow-auto">
                               <h5 class="card-title">Coupons</h5>
                               <div class="" >
-                                <a href="{% url 'add_coupon' %}" id="couponLink">add Coupon</a>
+                                <a href="{% url 'add_coupon' %}?customer_email={{customer.user.email}}" id="couponLink">add Coupon</a>
                               </div>
                               <!-- Table with stripped rows -->
                               <table class="table datatable">
@@ -86,6 +86,7 @@
                                     <th scope="col">Discount</th>
                                     <th scope="col">Used</th>
                                     <th scope="col">Expires In</th>
+                                    <th scope="col">View</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -97,6 +98,7 @@
                                     <th scope="row">{{coupone.discount}}%</th>
                                     <th scope="row"><a href=""> {% if coupone.used %}Yes {% else %}No {%  endif %}</a></th>
                                     <th scope="row">{{coupone.time_remaining}}</th>
+                                    <td scope="row"><span class="ms-1"><a href="{% url 'view_coupon' coupone.business.slug %}?coupon_id={{coupone.id}}" title='view'><i class="bi bi-eye"></i></a></span></td>
                                     
                                   </tr>
                                   {% endfor %}
@@ -111,56 +113,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- end coupons  -->
 
-                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-
-                    <div class="row">
-                        <div class="col-lg-12">
-                
-                          <div class="card">
-                            <div class="card-body overflow-auto">
-                              <h5 class="card-title">Challenges</h5>
-                              <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                search anything 
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                              </div>
-                              <!-- Table with stripped rows -->
-                              <table class="table datatable">
-                                <thead>
-                                  <tr>
-                                    <th scope="col">Business Name</th>
-                                    <th scope="col">Challenge</th>
-                                    <th scope="col">Rewards</th>
-                                    <th scope="col">Target Winners</th>
-                                    <th scope="col">Day Of Challenge</th>
-                                    <th scope="col">Challenge Closed</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {% for challenge in challenges %}
-                                  <tr>
-                                    <td scope="row">{{challenge.business.business_name}}</td>
-                                    <th scope="row"><a href="{% url 'view_store_challenge' challenge.business.slug %}?challenge_id={{challenge.id}}" style="cursor: pointer">{{challenge.challenge_name}}</a></th>
-                                    <td scope="row">{{challenge.challenge_reward}}</td>
-                                    <td scope="row">{{challenge.target_winners}}</td>
-                                    <td  scope="row">{{ challenge.day_of_the_challenge}}</td>
-                                    <td scope="row"><a href="" title="update"> {% if challenge.closed %}Yes {% else %}No {%  endif %}</td>
-                                  </tr>
-                                  {% endfor %}
-                                  
-                                </tbody>
-                              </table>
-                              <!-- End Table with stripped rows -->
-                
-                            </div>
-                          </div>
-                
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="tab-pane fade pt-3" id="profile-settings">
+                <!-- challenges  -->
+                <div class="tab-pane fade pt-3" id="offers">
 
                   <div class="row">
 
@@ -202,23 +158,16 @@
                                             <tbody>
                                               {% for challenge in business.challenges.all %}
                                               {% if not challenge.closed %}
-                                              {% with coupones as customer_coupones %}
-                                              {% with challenge.participants.all as challenge_coupones %}
                                               <tr>
                                                 <th scope="row"><a href="{% url 'view_store_challenge' business.slug %}?challenge_id={{challenge.id}}" style="cursor: pointer">{{challenge.challenge_name}}</a></th>
                                                 <td scope="row">{{challenge.challenge_reward}}</td>
                                                 <td scope="row">{{challenge.target_winners}}</td>
                                                 <td  scope="row">{{ challenge.day_of_the_challenge}}</td>
                                                 <td scope="row">{{challenge.participants.count}}</td>
-                                                {% for coupon in customer_coupones %}
                                                 
-                                                <td scope="row"> {% if coupon in challenge_coupones %} You are participating {% else%} No {% endif %}</td>
-                                                
-                                                {% endfor %}
+                                                <td scope="row"> No </td>
                                                 
                                               </tr>
-                                              {% endwith %}
-                                              {% endwith %}
                                               {% endif %}
                                               {% endfor %}
                                               
@@ -244,6 +193,88 @@
                 
                   </div>
                 </div>
+                <!-- end challenges  -->
+
+                <!-- loyalty points  -->
+                <div class="tab-pane fade pt-3" id="loyalty-points">
+
+                  <div class="row">
+
+                    <div class="col-lg-12">
+                
+                      <!-- F.A.Q Group 2 -->
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">Businesses you've shopped from</h5>
+                
+                          <div class="accordion accordion-flush" id="faq-group-2">
+                            {% for business in customer_businesses %}
+                            <div class="accordion-item">
+                              <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-target="#faqsTwo-{{ business.id}}" type="button" data-bs-toggle="collapse">
+                                  {{ business.business_name }}
+                                </button>
+                              </h2>
+                              <div id="faqsTwo-{{ business.id}}" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                                <div class="accordion-body">
+                                  <div class="row">
+                                    <div class="col-lg-12">
+                            
+                                      <div class="card">
+                                        <div class="card-body overflow-auto">
+                                          <h5 class="card-title">Current Active Challenges</h5>
+                                          <!-- Table with stripped rows -->
+                                          <table class="table datatable">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Challenge</th>
+                                                <th scope="col">Rewards</th>
+                                                <th scope="col">Target Winners</th>
+                                                <th scope="col">Day Of Challenge</th>
+                                                <th scope="col">Participants</th>
+                                                <th scope="col">Participating</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {% for challenge in business.challenges.all %}
+                                              {% if not challenge.closed %}
+                                              <tr>
+                                                <th scope="row"><a href="{% url 'view_store_challenge' business.slug %}?challenge_id={{challenge.id}}" style="cursor: pointer">{{challenge.challenge_name}}</a></th>
+                                                <td scope="row">{{challenge.challenge_reward}}</td>
+                                                <td scope="row">{{challenge.target_winners}}</td>
+                                                <td  scope="row">{{ challenge.day_of_the_challenge}}</td>
+                                                <td scope="row">{{challenge.participants.count}}</td>
+                                                
+                                                <td scope="row"> No </td>
+                                                
+                                              </tr>
+                                              {% endif %}
+                                              {% endfor %}
+                                              
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                            
+                                    </div>
+                                  </div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                            {% endfor %}
+                
+                          </div>
+                
+                        </div>
+                      </div><!-- End F.A.Q Group 2 -->
+                
+                    </div>
+                
+                  </div>
+                </div>
+                <!-- end loyalty points  -->
+                
 
               </div><!-- End Bordered Tabs -->
 
