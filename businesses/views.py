@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+import os
+from django.conf import settings
+from django.http import HttpResponse
 from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -16,12 +19,8 @@ from django.core.mail import send_mail
 
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
-import os
-from django.conf import settings
-from django.http import HttpResponse
-from django.shortcuts import render
 
-import qrcode
+
 from io import BytesIO
 import base64
 # Create your views here.

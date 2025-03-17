@@ -10,7 +10,6 @@ daraja_client
 dj-database-url
 pillow==11.0.0
 psycopg2-binary==2.9.10
-pycairo==1.27.0
 qrcode==8.0
 requests==2.32.3
 whitenoise==6.8.2
