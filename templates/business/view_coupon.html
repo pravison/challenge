@@ -26,8 +26,9 @@
             margin-top: 15px;
         }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script> -->
+
+
 <main id="main" class="main">
     {% if messages %}
     {% for message in messages %}
@@ -75,6 +76,8 @@
 
                      
                 </div>
+                <canvas id="canvas" style="display: none;"></canvas>
+
             </div>
             <button class="btn btn-primary mt-3" id="downloadBtn">Download Coupon Code</button>
 
@@ -98,19 +101,110 @@
       });
     });
   </script> -->
-<script>
+<!-- <script>
     document.getElementById('downloadBtn').addEventListener('click', function () {
-      const targetDiv = document.getElementById('couponCardId');
-      domtoimage.toPng(targetDiv)
+        const downloadBtn = document.getElementById('downloadBtn');
+        const targetDiv = document.getElementById('couponCardId');
+
+        // Display download progress message
+        downloadBtn.innerText = 'Download in Progress...';
+        downloadBtn.disabled = true;
+
+        domtoimage.toPng(targetDiv, { 
+            quality: 1,
+            bgcolor: "white",
+            style: {
+                width: '280px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #007bff, #ffcc00)',
+                padding: '10px',
+                color: 'white',
+                margin: 'auto',
+                textAlign: 'center',
+                fontFamily: 'Arial, sans-serif'
+            }
+        })
         .then(function (dataUrl) {
-          const link = document.createElement('a');
-          link.download = f'coupone-code-{coupon.id}.png';
-          link.href = dataUrl;
-          link.click();
+            const link = document.createElement('a');
+            link.download = `coupone-code-{{coupon.id}}.png`;
+            link.href = dataUrl;
+            link.click();
+
+            // Reset download button text after download
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
         })
         .catch(function (error) {
-          console.error('oops, something went wrong!', error);
+            console.error('Oops, something went wrong!', error);
+
+            // Reset download button text if an error occurs
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
         });
     });
-  </script>
+</script> -->
+<!-- <script>
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const targetDiv = document.getElementById('couponCardId');
+        const canvas = document.getElementById('canvas');
+        
+        // Inform the user that the download is in progress
+        downloadBtn.innerText = 'Download in Progress...';
+        downloadBtn.disabled = true;
+
+        html2canvas(targetDiv, { 
+            scale: 2, // Makes the image clearer
+            backgroundColor: null,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `coupone-code-{{coupon.id}}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            // Reset button state
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
+        }).catch(function (error) {
+            console.error('Oops, something went wrong!', error);
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
+        });
+    });
+</script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const targetDiv = document.getElementById('couponCardId');
+
+        // Notify the user download is in progress
+        downloadBtn.innerText = 'Download in Progress...';
+        downloadBtn.disabled = true;
+
+        // Generate image from div
+        html2canvas(targetDiv, { 
+            scale: 2, // Higher scale for better resolution
+            backgroundColor: null,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `coupon-code-{{coupon.id}}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            // Reset button state
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
+        }).catch(function (error) {
+            console.error('Oops, something went wrong!', error);
+            downloadBtn.innerText = 'Download Coupon Code';
+            downloadBtn.disabled = false;
+        });
+    });
+</script>
+
+
+
   {% endblock %}
