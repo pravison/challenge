@@ -156,10 +156,8 @@ def register_user(request):
     pricing_plan = request.GET.get('pricing_plan') or ''
     add_staff_to = request.GET.get('add_staff_to') or ''
     add_customer_to = request.GET.get('add_customer_to') or ''  # Corrected this line   
-    code = request.GET.get('code') or ''
-    coupon_code = request.session.get('coupon_code') or ''
-    if coupon_code:
-        code = coupon_code
+    code = request.session.get('coupon_code') or request.GET.get('code') or ''
+
     next = request.GET.get('next') or ''
     print(add_customer_to)
     print(code)
@@ -254,63 +252,61 @@ def register_user(request):
     return render(request, 'home/register.html', context)
 
 def login_user(request):
-    next = request.GET.get('next') or ''
-    coupon_code = request.GET.get('coupone_code') or ''
+    next_url = request.GET.get('next', '')
+    coupon_code = request.GET.get('coupone_code', '')
 
-    if coupon_code != '':
-        request.session['coupon_code'] = 'coupon_code'
+    if coupon_code:
+        request.session['coupon_code'] = coupon_code  # Store actual coupon code
 
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        # Authenticate
+
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
             login(request, user)
 
             coupon_code = request.session.get('coupon_code')
+            print(f"Coupon Code from session: {coupon_code}")
+
             if coupon_code:
                 coupon = Coupone.objects.filter(code=coupon_code).first()
-                # confirm if coupon exists
-                business = coupon.business
-                
+                print(f"Fetched Coupon: {coupon}")
+
+                if not coupon:  # ✅ Prevent NoneType error
+                    messages.error(request, "Invalid or expired coupon code.")
+                    return redirect('profile')
+
+                business = coupon.business  # Now it's safe
+
                 if coupon.customer:
-                        messages.success(request, 'Unfortunatly!!! Coupon Already Taken')
-                        customer = Customer.objects.filter(user=request.user).first() 
-                        if customer is None:
-                            customer = Customer.objects.create(user=user)
-                        if customer not in business.customers.all():
-                            business.customers.add(customer)
+                    messages.error(request, "Unfortunately, this coupon is already taken.")
                 else:
-                    # we query user from database
-                    user=request.user
+                    user = request.user
                     staff = Staff.objects.filter(business=business, user=user).first()
+
                     if staff:
-                        messages.success(request, 'Staffs not allowed to participate!')
-                        if next_url !='':
-                            return redirect(next_url)
-                        return redirect('profile')
-                    customer = Customer.objects.filter(user=user).first()
-                    if customer is None:
-                        customer = Customer.objects.create(user=user) 
-                    coupon.customer =  customer
+                        messages.error(request, "Staff members are not allowed to participate!")
+                        return redirect(next_url or 'profile')
+
+                    customer, created = Customer.objects.get_or_create(user=user)
+                    coupon.customer = customer
                     coupon.save()
 
                     if customer not in business.customers.all():
                         business.customers.add(customer)
-                    messages.success(request, 'You have succesfully locked the coupone code to yourself !!!')
-                    messages.success(request, 'Now you stand a chance to win the offer !!!')
-                
-                messages.success(request, "You Have Been Logged In!")
-            if next != '':
-                return redirect(next)
-            return redirect('profile')
-        else:
-            messages.success(request, "There Was An Error Logging In, Please Try Again...")
-            return redirect('login_user')
-    else:
-        return render(request, 'home/login.html', {'next':next})
+
+                    messages.success(request, "You have successfully locked the coupon code to yourself!")
+                    messages.success(request, "Now you stand a chance to win the offer!")
+
+            messages.success(request, "You have been logged in!")
+            return redirect(next_url or 'profile')
+
+        messages.error(request, "There was an error logging in. Please try again.")
+        return redirect('login_user')
+
+    return render(request, 'home/login.html', {'next': next_url})
 
 def logout_user(request):
     logout(request)
