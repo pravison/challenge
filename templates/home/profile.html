@@ -5,6 +5,59 @@
 {% block title %} {{ request.user.first_name }} {{ request.user.last_name }} {% endblock%}
 {% block content %}
 
+<style>
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Ensures the popup stays on the screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Higher z-index to appear on top of other elements */
+}
+
+/* Popup content box */
+.popup-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+    z-index: 10000; /* Ensures the content box stays above the overlay */
+}
+/* #cc922e */ 
+/* #1563df blue color */
+
+.popup-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.popup-content button {
+    margin: 5px;
+    padding: 8px 16px;
+    background: #1563df;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup-content button:hover {
+    background: #1563df;
+}
+
+</style>
+
 <main id="main" class="main">
     
     <div class="pagetitle">
@@ -19,6 +72,8 @@
         {% endif %}
     </div><!-- End Page Title -->
 
+
+
     <section class="section profile">
       <div class="row">
         
@@ -26,9 +81,14 @@
           <div class="card">
             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
               <h2>{{ request.user.first_name }} {{ request.user.last_name }}</h2>
-              <h3>Active Coupones: {{ active_coupones_count }}</h3>
-              <h3>Challenges Participating In: {{challenges_count}}</h3></div>
+              <h3 class="text-center">Total Points: {{ total_points|intcomma }}</h3>
+              <h3 class="text-center">Total Approved Points: {{ total_approved_points|intcomma }}</h3>
+              <h3 class="text-center">Total  Points Awaiting Apporoval: {{ total_points_awaiting_approval|intcomma }}</h3>
+              <!-- <h3>Active Coupones: {{ active_coupones_count }}</h3>
+              <h >Challenges Participating In: {{challenges_count}}</h3>-->
+            </div>
           </div>
+
           {% if staff_businesses %}
           {% for staff in  staff_businesses %}
           <div class="card">
@@ -51,22 +111,26 @@
               <!-- Bordered Tabs -->
               <ul class="nav nav-tabs nav-tabs-bordered">
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#Coupones">Coupones</button>
                 </li>
 
                 <li class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#offers"> Offers </button>
+                </li> -->
+
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#loyalty-points"> Loyalty Points </button>
                 </li>
 
                 <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#loyalty-points"> Loyalty Points </button>
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#Refferals"> Your Refferals </button>
                 </li>
 
               </ul>
               <div class="tab-content pt-2">
                 <!-- coupons  -->
-                <div class="tab-pane fade show active profile-overview" id="Coupones">
+                <div class="tab-pane fade profile-overview" id="Coupones">
                     <div class="row">
                         <div class="col-lg-12">
                 
@@ -196,84 +260,155 @@
                 <!-- end challenges  -->
 
                 <!-- loyalty points  -->
-                <div class="tab-pane fade pt-3" id="loyalty-points">
-
+                <div class="tab-pane show active  fade pt-3" id="loyalty-points">
                   <div class="row">
+                    <!-- F.A.Q Group 1 -->
+                    <div class="card-body">
+                      <h5 class="card-title">Businesses you've shopped from</h5>
 
-                    <div class="col-lg-12">
-                
-                      <!-- F.A.Q Group 2 -->
-                      <div class="card">
-                        <div class="card-body">
-                          <h5 class="card-title">Businesses you've shopped from</h5>
-                
-                          <div class="accordion accordion-flush" id="faq-group-2">
-                            {% for business in customer_businesses %}
-                            <div class="accordion-item">
-                              <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" data-bs-target="#faqsTwo-{{ business.id}}" type="button" data-bs-toggle="collapse">
-                                  {{ business.business_name }}
-                                </button>
-                              </h2>
-                              <div id="faqsTwo-{{ business.id}}" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
-                                <div class="accordion-body">
-                                  <div class="row">
-                                    <div class="col-lg-12">
-                            
-                                      <div class="card">
-                                        <div class="card-body overflow-auto">
-                                          <h5 class="card-title">Current Active Challenges</h5>
-                                          <!-- Table with stripped rows -->
-                                          <table class="table datatable">
-                                            <thead>
-                                              <tr>
-                                                <th scope="col">Challenge</th>
-                                                <th scope="col">Rewards</th>
-                                                <th scope="col">Target Winners</th>
-                                                <th scope="col">Day Of Challenge</th>
-                                                <th scope="col">Participants</th>
-                                                <th scope="col">Participating</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {% for challenge in business.challenges.all %}
-                                              {% if not challenge.closed %}
-                                              <tr>
-                                                <th scope="row"><a href="{% url 'view_store_challenge' business.slug %}?challenge_id={{challenge.id}}" style="cursor: pointer">{{challenge.challenge_name}}</a></th>
-                                                <td scope="row">{{challenge.challenge_reward}}</td>
-                                                <td scope="row">{{challenge.target_winners}}</td>
-                                                <td  scope="row">{{ challenge.day_of_the_challenge}}</td>
-                                                <td scope="row">{{challenge.participants.count}}</td>
-                                                
-                                                <td scope="row"> No </td>
-                                                
-                                              </tr>
-                                              {% endif %}
-                                              {% endfor %}
-                                              
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      </div>
-                            
-                                    </div>
+                      <div class="accordion accordion-flush" id="faq-group-1">
+                        {% for business_shoped_in in business_points %}
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#faqsOne-{{business_shoped_in.id}}" type="button" data-bs-toggle="collapse">
+                              {{ business_shoped_in.business_name }}  (
+                              <b>  Total Points: {{ business_shoped_in.total_customer_points|default:0|intcomma }}</b>)
+                            </button>
+                          </h2>
+                          <div id="faqsOne-{{business_shoped_in.id}}" class="accordion-collapse collapse" data-bs-parent="#faq-group-1">
+                            <div class="accordion-body">
+                              <div class="card-body">
+                                <h5 class="card-title">What {{ business_shoped_in.business_name }} Does: </h5>
+                                <p>
+                                  {{ business_shoped_in.description|safe }}
+                                </p>
+                                <div class="card">
+                                  <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                                    <b class="text-center">Every 20th customer gets a free gas refill!</b>
+                                    <a class="btn btn-primary mt-3" href="{% url 'loyalty_membership' business_shoped_in.slug %}" style=" color: white"><b>Click to see your number or if you stand a chance for a free gas refill</b></a>
+                                    <a class="btn btn-primary mt-3" href="tel:0740562740" style=" color: white"><b>Call 0740562740 to request gas refill and earn 100 points</b></a>
                                   </div>
-                                  
+                                </div>
+                                <div class="card">
+                                  <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                                    <b class="text-center">For Every Refferal You bring you earn 50 points everytime they refill their gas!</b>
+                                    {% for code in refferal_codes %}
+                                    {% if code.business == business_shoped_in %}
+                                    <h2> Your Refferal Code : {{code.code}} </h2>
+                                    <a class="btn btn-primary mt-3" href="" onclick="showPopup(event, '{{ business_shoped_in.slug }}', '{{ code.code }}')" style=" color: white"><b>Copy the Refferal Code and Share with Your Neighbors</b></a>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <a class="btn btn-primary mt-3" href="{% url 'create_refferal_code' business_shoped_in.slug %}" style=" color: white"><b>Click to generate a referal code</b></a>
+                                  </div>
                                 </div>
                               </div>
+
+                              <div class="card-body overflow-auto">
+                                <h3 class="card-title"><b>Your Loyalty Points</b></h3>
+                                <!-- Table with stripped rows -->
+                                <table class="table datatable">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Business</th>
+                                      <th scope="col">Points Category</th>
+                                      <th scope="col">Purchase Value</th>
+                                      <th scope="col">Points Earned</th>
+                                      <th scope="col">Status</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody> 
+                                    <div>
+                                      <a class="btn btn-primary mt-3" href="{% url 'customer_adding_loyalty_points' business_shoped_in.slug %}" style=" color: white"><b>Click to Request Loyalty Points</b></a>
+                                    </div>
+                                    {% for point in business.points.all %}
+                                    <tr>
+                                      <th scope="row">{{point.business.business_name}}</th>
+                                      <td scope="row">{{point.category}}</td>
+                                      <td scope="row">{{point.purchase_value}}</td>
+                                      <td  scope="row">{{point.points_earned}}</td>
+                                      <td scope="row">{{point.status}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                  </tbody>
+                                </table>
+                              </div>
                             </div>
-                            {% endfor %}
-                
                           </div>
-                
                         </div>
-                      </div><!-- End F.A.Q Group 2 -->
-                
-                    </div>
-                
+                        {% endfor s%}
+
+                      </div>
+
+                    </div><!-- End F.A.Q Group 1 -->               
                   </div>
                 </div>
                 <!-- end loyalty points  -->
+
+                <!-- customer refferals  -->
+                <div class="tab-pane fade pt-3" id="Refferals">
+                  <div class="row">
+                    <!-- F.A.Q Group 1 -->
+                    <div class="card-body">
+                      <h5 class="card-title">Businesses you've reffered Customers to</h5>
+
+                      <div class="accordion accordion-flush" id="faq-group-1">
+                        {% for business_shoped_in in business_points %}
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#faqsOne-{{business_shoped_in.id}}" type="button" data-bs-toggle="collapse">
+                              {{ business_shoped_in.business_name }}
+                            </button>
+                          </h2>
+                          <div id="faqsOne-{{business_shoped_in.id}}" class="accordion-collapse collapse" data-bs-parent="#faq-group-1">
+                            <div class="accordion-body">
+                              <div class="card">
+                                  <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                                    <b class="text-center">For Every Refferal You bring you earn 50 points everytime they refill their gas!</b>
+                                    {% for code in refferal_codes %}
+                                    {% if code.business == business_shoped_in %}
+                                    <h2> Your Refferal Code : {{code.code}} </h2>
+                                    <a class="btn btn-primary mt-3" href="" onclick="showPopup(event, '{{ business_shoped_in.slug }}', '{{ code.code }}')" style=" color: white"><b>Copy the Refferal Code and Share with Your Neighbors</b></a>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <a class="btn btn-primary mt-3" href="{% url 'create_refferal_code' business_shoped_in.slug %}" style=" color: white"><b>Click to generate a referal code</b></a>
+                                  </div>
+                                </div>
+                              <div class="card-body overflow-auto">
+                                <h3 class="card-title"><b>Customer You Reffered</b></h3>
+                                <!-- Table with stripped rows -->
+                                <table class="table datatable">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Customer</th>
+                                      <th scope="col">Date Joined</th>
+                                      <th scope="col">No Of Refills</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody> 
+                                    
+                                    {% for point in business.points.all %}
+                                    <tr>
+                                      <th scope="row">{{point.business.business_name}}</th>
+                                      <td scope="row">{{point.category}}</td>
+                                      <td scope="row">{{point.purchase_value}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor s%}
+
+                      </div>
+
+                    </div><!-- End F.A.Q Group 1 -->               
+                  </div>
+                </div>
+                <!-- end customer refferals -->
                 
 
               </div><!-- End Bordered Tabs -->
@@ -286,4 +421,46 @@
     </section>
 
 </main><!-- End #main -->
+<script>
+    function showPopup(event, slug, code) {
+        event.preventDefault(); // Prevent default link behavior
+        
+        const popup = document.getElementById('popup');
+        const shareUrlInput = document.getElementById('share-url');
+        
+        // Construct the referral URL
+        var  url_host = '{{request.get_host}}'
+        var  url_scheme = '{{request.scheme}}'
+
+        const referralUrl = `${url_scheme}://${url_host}/business/${slug}/loyalty-membership/?referral_code=${code}`;
+        
+        console.log(referralUrl)
+        // Set the referral URL in the input field
+        shareUrlInput.value = referralUrl;
+
+        popup.style.display = 'flex'; // Show the popup
+    }
+
+    function closePopup() {
+        const popup = document.getElementById('popup');
+        popup.style.display = 'none'; // Hide the popup
+    }
+
+    function copyToClipboard() {
+        const urlField = document.getElementById('share-url');
+        urlField.select(); // Select the text
+        document.execCommand('copy'); // Copy the text to the clipboard
+        alert('Referral URL copied to clipboard!');
+    }
+</script>
+
+<!-- Popup Modal -->
+<div id="popup" class="popup" style="display:none;">
+    <div class="popup-content">
+        <p>Share this URL:</p>
+        <input type="text" id="share-url" readonly />
+        <button onclick="copyToClipboard()">Copy</button>
+        <button onclick="closePopup()">Close</button>
+    </div>
+</div>
   {% endblock %}

@@ -19,7 +19,7 @@
                     </div>
                     {% endfor %}
                 {% endif %}
-                <form class="from_main" action="{% url 'register_user' %}?pricing_plan={{pricing_plan}}&add_staff_to={{add_staff_to}}&add_customer_to={{add_customer_to}}&code={{code}}&next={{next}}" method="POST">
+                <form class="from_main" action="{% url 'register_user' %}?pricing_plan={{pricing_plan}}&add_staff_to={{add_staff_to}}&add_customer_to={{add_customer_to}}&code={{code}}&next_url={{next_url}}" method="POST">
                     {% csrf_token %}
                     <div class="row">
                         <div class="form-group col-lg-6">

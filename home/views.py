@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.db.models import Sum, Q, Prefetch
+
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from datetime import date, timedelta
@@ -6,7 +8,7 @@ from django.utils.text import slugify
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from datetime import date
-from businesses.models import Business, Staff, Coupone, StoreChallenge, RefferralCode, BusinessCustomer
+from businesses.models import Business, Staff, Coupone, StoreChallenge, RefferralCode, BusinessCustomer, LoyaltyPointsCategory, LoyaltyPoint
 from customers.models import Customer
 # Create your views here.
 from django.shortcuts import render, redirect
@@ -132,11 +134,39 @@ def profile(request):
     active_coupones_count = sum(
         1 for c in coupones if not c.used and c.date_created > today - timedelta(days=Coupone._meta.get_field('expiry_in').default)
     )
-    #Business.objects.filter(challenges__participants=creator).distinct().prefetch_related("challenges") #business user has participated in their challange
-    
-    
-    refferal_codes = RefferralCode.objects.filter(customer=customer)
+    # business_points= business_points = Business.objects.filter(
+    #     customers=customer
+    # ).annotate(
+    #     total_customer_points=Sum(
+    #         'points__points_earned', 
+    #         filter=Q(points__customer=customer)  # Only include points for this customer
+    #     )
+    # )
+    # Prefetch only the customer's points for each business
+    customer_points_prefetch = Prefetch(
+        'points',
+        queryset=LoyaltyPoint.objects.filter(customer=customer),
+        to_attr='customer_points'  # Rename for clarity
+    )
 
+    
+    # Get businesses associated with the customer
+    business_points = Business.objects.filter(
+        customers=customer 
+    ).annotate(
+        total_customer_points=Sum(
+            'points__points_earned',
+            filter=Q(points__customer=customer) and Q(points__status='approved')
+        )
+    ).prefetch_related(customer_points_prefetch)
+
+    refferal_codes = RefferralCode.objects.filter(customer=customer)
+    points= LoyaltyPoint.objects.filter(customer=customer)
+    total_points = points.exclude(status='declined').aggregate(Sum('points_earned'))['points_earned__sum'] or 0
+    total_approved_points = points.filter(status='approved').aggregate(Sum('points_earned'))['points_earned__sum'] or 0
+    total_points_awaiting_approval = points.filter(status='awaiting approval').aggregate(Sum('points_earned'))['points_earned__sum'] or 0
+    
+   
     context = {
         'businesses': businesses,
         'coupones': coupones,
@@ -147,31 +177,48 @@ def profile(request):
         'customer_businesses': customer_businesses,
         'staff_businesses': staff_businesses,
         'refferal_codes' : refferal_codes,
+        'points': points,
+        'total_points': total_points,
+        'total_approved_points': total_approved_points,
+        'total_points_awaiting_approval':total_points_awaiting_approval,
+        'business_points': business_points,
         # 'business_customer': business_customer
     }
     return render(request, 'home/profile.html', context)
 
 # Create your views here.
 def register_user(request):
+    next_url = request.GET.get('next', '')
     pricing_plan = request.GET.get('pricing_plan') or ''
     add_staff_to = request.GET.get('add_staff_to') or ''
     add_customer_to = request.GET.get('add_customer_to') or ''  # Corrected this line   
     code = request.session.get('coupon_code') or request.GET.get('code') or ''
+    refferal_code = request.GET.get('refferal_code') or ''
+    
+    stored_refferal_code = request.session.get('stored_refferal_code') or '' #  we get both refferal code plus business slug         
+    
+    if refferal_code !='' and add_customer_to !='':
+        request.session['stored_refferal_code'] = {
+            'slug': add_customer_to,
+            'code': refferal_code
+            }
 
-    next = request.GET.get('next') or ''
-    print(add_customer_to)
-    print(code)
+    if stored_refferal_code !='':
+        stored_slug = stored_refferal_code.get('slug')
+        if stored_slug == add_customer_to:
+            refferal_code = stored_refferal_code.get('code')
+            
+    
+
     context = {
         'add_staff_to': add_staff_to,
         'add_customer_to': add_customer_to,
         'pricing_plan': pricing_plan,
         'code': code,
-        'next': next,
+        'next_url': next_url,
     }
 
     if request.method == "POST":
-        print(add_customer_to)
-        print(code)
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
@@ -220,29 +267,56 @@ def register_user(request):
                     customer = Customer.objects.create(user=user)
                     if customer not in business.customers.all():
                         business.customers.add(customer)
+                        points_category = LoyaltyPointsCategory.objects.filter(business=business, category='signup points').first()
+                        if not points_category:
+                            points_category = LoyaltyPointsCategory.objects.create(
+                                business = business,
+                                category = 'signup points',
+                                total_value_for_a_point = int(1),
+                                )
+
+                        LoyaltyPoint.objects.create(
+                            business = business,
+                            customer = customer,
+                            category = points_category or None,
+                            purchase_value = int(0),
+                            points_earned = int(200),#have assummed every business will give 200 signupp bonus will correct to add what each business want to offer
+                            added_by = 'automaticaly during signup',
+                            status = 'approved'
+                            )
+                        messages.success(request, 'Congrats You have Claimed 200 points')
 
 
-                # Handle coupon code
-                if code != '':
-                    coupon = Coupone.objects.filter(code=code).first()
-                    if coupon:
-                        if coupon.customer:
-                            messages.success(request, 'Sorry! Coupon already taken')
+                    # Handle coupon code
+                    if code != '':
+                        coupon = Coupone.objects.filter(code=code).first()
+                        if coupon:
+                            if coupon.customer:
+                                messages.success(request, 'Sorry! Coupon already taken')
+                            else:
+                                coupon.customer = customer
+                                coupon.save()
+
+                            if customer not in business.customers.all():
+                                business.customers.add(customer)
                         else:
-                            coupon.customer = customer
-                            coupon.save()
+                            messages.success(request, 'Coupon does not exist') 
 
-                        if customer not in business.customers.all():
-                            business.customers.add(customer)
-                    else:
-                        messages.success(request, 'Coupon does not exist') 
-        
+                    if refferal_code != '':
+                        code = RefferralCode.objects.filter(business=business, code=refferal_code).first()
+                        if code:
+                            BusinessCustomer.objects.create(
+                                business = business,
+                                customer = code.customer,
+                                reffered_by = code.customer.user
+                                )
+            
 
-        # Handle redirect for "next" parameter
-        if next != '':
+        # Handle redirect for "next_url" parameter
+        if next_url != '':
             user = authenticate(username=username, password=password)
             login(request, user)
-            return redirect(next)
+            return redirect(next_url)
 
         # Default redirect after registration
         user = authenticate(username=username, password=password)
@@ -254,6 +328,9 @@ def register_user(request):
 def login_user(request):
     next_url = request.GET.get('next', '')
     coupon_code = request.GET.get('coupone_code', '')
+
+    stored_refferal_code = request.session.get('stored_refferal_code') or '' #  we get both refferal code plus business slug         
+    
 
     if coupon_code:
         request.session['coupon_code'] = coupon_code  # Store actual coupon code
@@ -295,14 +372,52 @@ def login_user(request):
                     coupon.save()
 
                     if customer not in business.customers.all():
-                        business.customers.add(customer)
+                        coupon.business.customers.add(customer)
+
 
                     messages.success(request, "You have successfully locked the coupon code to yourself!")
                     messages.success(request, "Now you stand a chance to win the offer!")
 
-            messages.success(request, "You have been logged in!")
-            return redirect(next_url or 'profile')
+            if stored_refferal_code !='':
+                stored_slug = stored_refferal_code.get('slug')
+                business = Business.objects.filter(slug=stored_slug).first()
+                if business:
+                    customer = Customer.objects.filter(user=user).first()
+                    if customer is None:
+                        customer = Customer.objects.create(user=user)
+                    if customer not in business.customers.all():
+                        business.customers.add(customer)
+                        
+                        points_category = LoyaltyPointsCategory.objects.filter(business=business, category='signup points').first()
+                        
+                        if points_category is None:
+                            points_category = LoyaltyPointsCategory.objects.create(
+                                business=business,
+                                category='signup points',
+                                total_value_for_a_point = int(1)
+                                )
 
+                        LoyaltyPoint.objects.create(
+                            business = business,
+                            customer = customer,
+                            category = points_category,
+                            purchase_value = int(0),
+                            points_earned = int(200),#have assummed every business will give 200 signupp bonus will correct to add what each business want to offer
+                            added_by = 'automaticaly during signup',
+                            status = 'approved'
+                            )
+                        messages.success(request, 'Congrats You have Claimed 200 points')
+
+                        refferal_code = stored_refferal_code.get('code') 
+                        code = RefferralCode.objects.filter(business=business, code=refferal_code).first()
+                        if code:
+                            BusinessCustomer.objects.create(
+                                business = business,
+                                customer = code.customer,
+                                reffered_by = code.customer.user
+                                )
+            messages.success(request, 'Welcome, you have ben logged in!')
+            return redirect(next_url or 'profile')
         messages.error(request, "There was an error logging in. Please try again.")
         return redirect('login_user')
 

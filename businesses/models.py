@@ -10,7 +10,7 @@ class Business(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=250, unique=True)
     slug = models.CharField(max_length=250, unique=True)
-    phone_number = models.CharField(max_length=250)
+    phone_number = models.CharField(max_length=25)
     location = models.CharField(max_length=250)
     address = models.TextField(max_length=1000)
     description = models.TextField(blank=True, help_text='describe what you do')
@@ -28,6 +28,25 @@ class  Staff(models.Model):
     def __str__(self):
         return f'{self.user.first_name} - {self.business.business_name}'
 
+
+class Product(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='product')
+    product_name = models.CharField(max_length=250)
+    price = models.IntegerField(default=1000, help_text='price you charge for the product')
+    points = models.IntegerField(default=0, help_text='point cutomer earns after purchasing this product')
+    offer = models.TextField(blank=True, help_text='what offer are you running for these products')
+    created_by = models.ForeignKey(Staff, blank=True, null=True, on_delete=models.SET_NULL)
+    
+    def __str__(self):
+        return self.product_name
+    
+class ScanCount(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='scan_count')
+    customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.SET_NULL)
+    number = models.IntegerField()
+    
+    def __str__(self):
+        return f'{self.business} - {self.number}'
 
 class Coupone(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='coupone')
@@ -96,7 +115,7 @@ class StoreChallenge(models.Model):
 
 class LoyaltyPointsCategory(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='points_category')
-    category = models.CharField(max_length=100, choices=(('points on purchases made', 'points on purchases made'), ('points on visiting the store', 'points on visiting the store'), ('points on refferal sales', 'points on refferal sales'), ('points on bringing friends to the store', 'points on bringing friends to the store')))
+    category = models.CharField(max_length=100, choices=(('points on purchases made', 'points on purchases made'), ('signup points', 'signup points'), ('points on visiting the store', 'points on visiting the store'), ('points from refferal sales', 'points from refferal sales'), ('points on bringing friends to the store', 'points on bringing friends to the store')))
     total_value_for_a_point = models.IntegerField( help_text=" for purchase made what purchase value equals a point, for visits how many visits eaquals apoint, for refferal sales whats sales value equals a point, and for friends brought to the store how many friends equals a point")
     redemed_at_how_much_per_point = models.FloatField(default=0.50)
     edited_by = models.ForeignKey(Staff, blank=True, null=True, on_delete=models.SET_NULL)
@@ -111,12 +130,16 @@ class LoyaltyPoint(models.Model):
     purchase_value = models.IntegerField()
     points_earned = models.IntegerField()
     added_by = models.CharField(max_length=200)
+    payement_refference_code = models.CharField(max_length=200, blank=True, null=True, )
+    status = models.CharField(max_length=100, default="awaiting approval", choices=(('awaiting approval', 'awaiting approval'), ('approved', 'approved'), ('declined', 'declined')))
 
     def __str__(self):
         return f'{self.customer.user.first_name} {self.customer.user.first_name} points earned: {self.points_earned}'
 
+    
+
 class RefferralCode(models.Model):
-    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='refferal')
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='refferals')
     customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.SET_NULL)
     code = models.CharField(max_length=8, unique=True)
     def __str__(self):

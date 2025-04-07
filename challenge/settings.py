@@ -28,7 +28,7 @@ SECRET_KEY=env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', '.salesflowpro.xyz', 'salesflowpro.xyz', '.challenge.shop', 'challenge.shop']
+ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'localhost', '.salesflowpro.xyz', 'salesflowpro.xyz', '.challenge.shop', 'challenge.shop']
 
 # Application definition
 
