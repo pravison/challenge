@@ -13,7 +13,7 @@ class PasswordResetCode(models.Model):
 
     def is_expired(self):
         # Expire the code after 10 minutes (adjust as needed)
-        return (now() - self.created_at).total_seconds() > 1200
+        return (now() - self.created_at).total_seconds() < 2400
 
     class Meta:
         constraints = [
