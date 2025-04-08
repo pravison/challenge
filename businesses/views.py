@@ -913,7 +913,7 @@ def loyalty_points(request, slug):
         loyalty_point.save()
     
 
-    qr_url = f"{request.scheme}://{request.get_host()}/business/"  # URL to lock the code
+    qr_url = f"{request.scheme}://{request.get_host()}/business/{slug}/loyalty-membership/"  # URL to lock the code
 
     # Generate QR code
     qr = qrcode.QRCode(version=1, box_size=5, border=2)
@@ -945,7 +945,7 @@ def loyalty_qr_code(request, slug):
     # a quering the first product
     # will update code to query products dynamically
     products = Product.objects.filter(business=business).first()
-    qr_url = f"{request.scheme}://{request.get_host()}/business/"  # URL to lock the code
+    qr_url = f"{request.scheme}://{request.get_host()}/business/{slug}/loyalty-membership/"  # URL to lock the code
 
     # Generate QR code
     qr = qrcode.QRCode(version=1, box_size=5, border=2)
