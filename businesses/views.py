@@ -937,7 +937,13 @@ def loyalty_points(request, slug):
     return render(request, 'business/loyalty-points.html', context)
 
 def loyalty_qr_code(request, slug):
-
+    code_reffered = request.GET.get('referral_code') or '' #code that reffered request.user
+  
+    if code_reffered !='':
+        request.session['stored_refferal_code'] = {
+            'slug': slug,
+            'code': code_reffered
+            }
     business = Business.objects.filter(slug=slug).first()
     if not business:
         messages.success(request, "Bussiness doesnt exists!!!")
@@ -986,13 +992,7 @@ def get_next_number(slug):
         return next_number
     
 def loyalty_membership(request, slug): 
-    code_reffered = request.GET.get('referral_code') or '' #code that reffered request.user
-  
-    if code_reffered !='':
-        request.session['stored_refferal_code'] = {
-            'slug': slug,
-            'code': code_reffered
-            }
+    
     business = Business.objects.filter(slug=slug).first()
     if not business:
         messages.success(request, "Bussiness doesnt exists!!!")
@@ -1059,7 +1059,7 @@ def loyalty_membership(request, slug):
         'remaining_points': remaining_points,
         'percentage_points': percentage_points,
         'refferal_code': refferal_code,
-        'code_reffered': code_reffered
+        # 'code_reffered': code_reffered
     }
     return render(request, 'business/loyalty-membership.html', context)
 
