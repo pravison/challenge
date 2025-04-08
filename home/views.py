@@ -147,22 +147,22 @@ def profile(request):
     active_coupones_count = sum(
         1 for c in coupones if not c.used and c.date_created > today - timedelta(days=Coupone._meta.get_field('expiry_in').default)
     )
+
     customer_points_prefetch = Prefetch(
-        'points',
-        queryset=LoyaltyPoint.objects.filter(customer=customer),
-        to_attr='customer_points'  # Rename for clarity
+    'points',
+    queryset=LoyaltyPoint.objects.filter(customer=customer),
+    to_attr='customer_points'
     )
 
-    
-    # Get businesses associated with the customer
     business_points = Business.objects.filter(
-        customers=customer 
+        customers=customer
     ).annotate(
         total_customer_points=Sum(
             'points__points_earned',
-            filter=Q(points__customer=customer) and Q(points__status='approved')
+            filter=Q(points__customer=customer) & Q(points__status='approved')
         )
     ).prefetch_related(customer_points_prefetch)
+
 
     refferal_codes = RefferralCode.objects.filter(customer=customer)
     all_points = LoyaltyPoint.objects.all()
