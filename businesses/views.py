@@ -1049,6 +1049,7 @@ def loyalty_membership(request, slug):
                 }
             customer_scan_count = scan_count.number
 
+    
     context={
         'business': business,
         'products': products,

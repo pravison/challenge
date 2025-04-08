@@ -348,71 +348,33 @@
                 <!-- customer refferals  -->
                 <div class="tab-pane fade pt-3" id="Refferals">
                   <div class="row">
-                    <!-- F.A.Q Group 1 -->
-                    <div class="card-body">
-                      <h5 class="card-title">Businesses you've reffered Customers to</h5>
-
-                      <div class="accordion accordion-flush" id="faq-group-1">
-                        {% for business_shoped_in in business_points %}
-                        <div class="accordion-item">
-                          <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" data-bs-target="#faqsOne-{{business_shoped_in.id}}" type="button" data-bs-toggle="collapse">
-                              {{ business_shoped_in.business_name }}
-                            </button>
-                          </h2>
-                          <div id="faqsOne-{{business_shoped_in.id}}" class="accordion-collapse collapse" data-bs-parent="#faq-group-1">
-                            <div class="accordion-body">
-                              <div class="card">
-                                  <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                                    <b class="text-center">For Every Refferal You bring you earn 50 points everytime they refill their gas!</b>
-                                    {% for code in refferal_codes %}
-                                    {% if code.business == business_shoped_in %}
-                                    <h2> Your Refferal Code : {{code.code}} </h2>
-                                    <a class="btn btn-primary mt-3" href="" onclick="showPopup(event, '{{ business_shoped_in.slug }}', '{{ code.code }}')" style=" color: white"><b>Copy the Refferal Code and Share with Your Neighbors</b></a>
-                                    {% endif %}
-                                    {% endfor %}
-                                    <a class="btn btn-primary mt-3" href="{% url 'create_refferal_code' business_shoped_in.slug %}" style=" color: white"><b>Click to generate a referal code</b></a>
-                                  </div>
-                                </div>
-                              <div class="card-body overflow-auto">
-                                <h3 class="card-title"><b>Customer You Reffered</b></h3>
-                                <!-- Table with stripped rows -->
-                                <table class="table datatable">
-                                  <thead>
-                                    <tr>
-                                      <th scope="col">Customer</th>
-                                      <th scope="col">Date Joined</th>
-                                      <th scope="col">No Of Refills</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody> 
-                                    
-                                    {% for point in business.points.all %}
-                                    <tr>
-                                      <th scope="row">{{point.business.business_name}}</th>
-                                      <td scope="row">{{point.category}}</td>
-                                      <td scope="row">{{point.purchase_value}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {% endfor s%}
-
-                      </div>
-
-                    </div><!-- End F.A.Q Group 1 -->               
+                    <div class="card-body overflow-auto">
+                      <h3 class="card-title"><b>Customer You've Reffered</b></h3>
+                      <!-- Table with stripped rows -->
+                      <table class="table datatable">
+                        <thead>
+                          <tr>
+                            <th scope="col">Business</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">No. of times Purchased</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for customer_refferal in refferd_customers %}
+                          <tr>
+                            <th scope="row">{{customer_refferal.business.business_name}}</th>
+                            <td scope="row">{{customer_refferal.customer}}</td>
+                            <td scope="row">{{customer_refferal.loyalty_point_count}}</td>
+                          </tr>
+                          {% endfor %}
+                          
+                        </tbody>
+                      </table>
+                    </div>
+                                  
                   </div>
                 </div>
                 <!-- end customer refferals -->
-                
-
-              </div><!-- End Bordered Tabs -->
-
             </div>
           </div>
 

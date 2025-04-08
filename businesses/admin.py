@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Business, Staff, StoreChallenge, Coupone, LoyaltyPoint, LoyaltyPointsCategory, RefferralCode, Product, ScanCount
+from .models import Business, Staff, StoreChallenge, Coupone, LoyaltyPoint, LoyaltyPointsCategory, RefferralCode, Product, ScanCount, BusinessCustomer
 
 # Register your models here.
 admin.site.register(Business)
@@ -11,3 +11,4 @@ admin.site.register(LoyaltyPointsCategory)
 admin.site.register(RefferralCode)
 admin.site.register(Product)
 admin.site.register(ScanCount)
+admin.site.register(BusinessCustomer)

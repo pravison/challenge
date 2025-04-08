@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.db.models import Sum, Q, Prefetch
-
+from django.db.models import Count, Sum, Q, Prefetch, Subquery, OuterRef
+from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from datetime import date, timedelta
@@ -54,61 +54,6 @@ def request_reset_code(request):
         form = RequestResetCodeForm()
     return render(request, 'home/request_reset_code.html')
 
-
-# def verify_reset_code(request):
-#     if request.method == 'POST':
-#         form = PasswordResetCodeForm(request.POST)
-#         if form.is_valid():
-#             code = form.cleaned_data['code']
-#         try:
-#             reset_code = PasswordResetCode.objects.filter(code=code, is_valid=True).order_by('-created_at').first()
-#             if reset_code.is_expired():
-#                 reset_code.is_valid = False
-#                 reset_code.save()
-#                 messages.error(request, 'This code has expired.')
-#                 return redirect('request_reset_code')
-#             else:
-#                 # Invalidate the code
-#                 reset_code.is_valid = False
-#                 reset_code.save()
-#                 # Redirect to password reset form
-#                 request.session['password_reset_user_id'] = reset_code.user.id
-#                 return redirect('reset_password')
-#                 return redirect('request_reset_code')
-#         except PasswordResetCode.DoesNotExist:
-#             messages.error(request, 'Invalid or expired code.')
-#     form = PasswordResetCodeForm()
-#     return render(request, 'home/verify_reset_code.html', {'form': form} )
-
-# def reset_password(request):
-#     user_id = request.session.get('password_reset_user_id')
-#     if not user_id:
-#         return redirect('request_reset_code')
-    
-#     user = User.objects.get(id=user_id)
-#     try:
-#         reset_code = PasswordResetCode.objects.filter(user=user).order_by('-created_at').first()
-#         if reset_code.is_expired():
-#             # If the code is expired or invalid, redirect to request a new one
-#             reset_code.is_valid = False
-#             reset_code.save()
-#             messages.error(request, 'Your reset code has expired. Please request a new code.')
-#             return redirect('request_reset_code')
-#     except (User.DoesNotExist, PasswordResetCode.DoesNotExist):
-#         # If the user or reset code is not found, redirect to the request page
-#         messages.error(request, 'Invalid reset request. Please try again.')
-#         return redirect('request_reset_code')
-#     if request.method == 'POST':
-#         form = SetPasswordForm(user, request.POST)
-#         if form.is_valid():
-#             form.save()
-#             # Keep the user logged in after password change
-#             update_session_auth_hash(request, user)
-#             messages.success(request, 'Your password has been successfully reset.')
-#             return redirect('login_user')
-#     else:
-#         form = SetPasswordForm(user)
-#     return render(request, 'home/reset_password.html', {'form': form})
 
 def verify_reset_code(request):
     if request.method == 'POST':
@@ -229,12 +174,41 @@ def profile(request):
     ).prefetch_related(customer_points_prefetch)
 
     refferal_codes = RefferralCode.objects.filter(customer=customer)
-    points= LoyaltyPoint.objects.filter(customer=customer)
+    all_points = LoyaltyPoint.objects.all()
+    points= all_points.filter(customer=customer)
     total_points = points.exclude(status='declined').aggregate(Sum('points_earned'))['points_earned__sum'] or 0
     total_approved_points = points.filter(status='approved').aggregate(Sum('points_earned'))['points_earned__sum'] or 0
     total_points_awaiting_approval = points.filter(status='awaiting approval').aggregate(Sum('points_earned'))['points_earned__sum'] or 0
     
-   
+    refferals_points = all_points.filter(category__category='points on purchases made', status='approved')
+
+    loyalty_points_subquery = refferals_points.filter(
+        business=OuterRef('business'),
+        customer = OuterRef('customer')).values('customer')
+    # or .values('pk') just to allow aggregations
+
+    # use annottion to count matching points
+
+    refferd_customers = BusinessCustomer.objects.filter(reffered_by=request.user).annotate(
+        loyalty_point_count=Coalesce(
+            Subquery(
+                loyalty_points_subquery.annotate(
+                    count=Count('id')
+                    ).values('count')[:1]),
+            0
+            )
+        )
+
+    # looping throuhg using python
+    # from collections import defaultdict
+    # points_count_map = defaultdict(int)
+    # for point in refferals_points:
+    #     key = (point.business_id, point.customer_id)
+    #     points_count_map[key] +=1
+    # # add count to each reffered customer 
+    # for customer in customer_refferals:
+    #     key = (customer.business_id, customer.customer_id)
+    #     customer.loyalty_point_count = points_count_map.get(key, 0)
     context = {
         'businesses': businesses,
         'coupones': coupones,
@@ -250,7 +224,7 @@ def profile(request):
         'total_approved_points': total_approved_points,
         'total_points_awaiting_approval':total_points_awaiting_approval,
         'business_points': business_points,
-        # 'business_customer': business_customer
+        'refferd_customers': refferd_customers
     }
     return render(request, 'home/profile.html', context)
 
@@ -263,7 +237,7 @@ def register_user(request):
     code = request.session.get('coupon_code') or request.GET.get('code') or ''
     refferal_code = request.GET.get('refferal_code') or ''
     
-    stored_refferal_code = request.session.get('stored_refferal_code') or '' #  we get both refferal code plus business slug         
+    stored_refferal_code= request.session.get('stored_refferal_code') or '' #  we get both refferal code plus business slug         
     
     if refferal_code !='' and add_customer_to !='':
         request.session['stored_refferal_code'] = {
@@ -275,8 +249,13 @@ def register_user(request):
         stored_slug = stored_refferal_code.get('slug')
         if stored_slug == add_customer_to:
             refferal_code = stored_refferal_code.get('code')
-            
-    
+        else:
+            add_customer_to = stored_slug
+            refferal_code = stored_refferal_code.get('code')
+
+            print(add_customer_to)
+            print(refferal_code)
+
 
     context = {
         'add_staff_to': add_staff_to,
@@ -295,7 +274,7 @@ def register_user(request):
         # Check if user already exists
         if User.objects.filter(email=email).exists():
             messages.success(request, 'Email already exists.')
-            messages.success(request, 'If you have never registered using this email, please reach out to our tech team.')
+            messages.success(request, 'Please login and if forgot password click forgot password')
             return render(request, 'home/register.html', context)
         
         # Create user
@@ -354,7 +333,6 @@ def register_user(request):
                             )
                         messages.success(request, 'Congrats You have Claimed 200 points')
 
-
                     # Handle coupon code
                     if code != '':
                         coupon = Coupone.objects.filter(code=code).first()
@@ -375,7 +353,7 @@ def register_user(request):
                         if code:
                             BusinessCustomer.objects.create(
                                 business = business,
-                                customer = code.customer,
+                                customer = customer,
                                 reffered_by = code.customer.user
                                 )
             

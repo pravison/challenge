@@ -19,4 +19,4 @@ class Customer(models.Model):
     total_loyalty_points = models.IntegerField(default=0)
     date_joined = models.DateTimeField(auto_now_add = True)
     def __str__(self):
-        return self.user.first_name 
+        return f'{self.user.first_name} {self.user.last_name}' 
